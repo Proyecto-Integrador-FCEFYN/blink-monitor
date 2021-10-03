@@ -4,6 +4,8 @@
         "semphr.h": "c",
         "string": "cpp",
         "random": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "esp_attr.h": "c",
+        "pthread.h": "c"
     }
 }
