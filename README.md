@@ -1,5 +1,11 @@
-# Blink Example
+# Monitor con pthreads
 
-Starts a FreeRTOS task to blink an LED
+## Instrucciones de uso
 
-See the README.md file in the upper level 'examples' directory for more information about examples.
+### Buildeo:
+
+$ idf.py build
+
+### Run:
+
+$ idf.py -b 115200 -p \<port\> flash monitor
