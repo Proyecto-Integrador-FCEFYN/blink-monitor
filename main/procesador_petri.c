@@ -1,5 +1,9 @@
-#include <stdio.h>
+//#include <stdio.h>
+#include <esp_log.h>
 #include "procesador_petri.h"
+
+static const char* TAG = "Petri";
+
 
 static long int matriz_estado_aux[PLAZAS];
 
@@ -29,11 +33,14 @@ static int petri_disparar(procesador_petri_t *petri, int disparo)
 
 void petri_toString(procesador_petri_t *petri)
 {
-    printf("MARCADO: ");
+    //printf("MARCADO: ");
+    ESP_LOGW(TAG, "MARCADO: ");
     for (int i = 0; i < PLAZAS; ++i) {
-        printf("%li, ", petri->matriz_estado[i]);
+        ESP_LOGW(TAG, "%li, ", petri->matriz_estado[i]);
+        //printf("%li, ", petri->matriz_estado[i]);
     }
-    printf("\n");
+    //ets_printf("\n");
+    ESP_LOGW(TAG,"\n");
 }
 
 void procesador_de_petri_init(procesador_petri_t *petri)

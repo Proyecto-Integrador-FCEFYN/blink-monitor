@@ -1,20 +1,11 @@
+#include <esp_log.h>
 #include "monitor.h"
 #include "macros.h"
+#include "gpio_device.h"
+
+static const char* TAG = "Monitor";
 
 
-static int logueo(int disparo)
-{
-    FILE *f = fopen("../file.txt", "a" );
-    if (f == NULL)
-    {
-        printf("Error opening file!\n");
-        return -1;
-    }
-    fprintf(f,"%i\n", disparo);
-    printf("%i\n",disparo);
-    fclose(f);
-    return 1;
-}
 
 void monitor_disparar2(monitor_t *monitor, int disparo)
 {
@@ -25,18 +16,18 @@ void monitor_disparar2(monitor_t *monitor, int disparo)
     while (k == 0)
     {
 #if DEBUG
-        printf("No Sensibilizada: %i -- espera\n", disparo);
+        ESP_LOGW(TAG, "No Sensibilizada: %i -- espera\n", disparo);
+        //printf("No Sensibilizada: %i -- espera\n", disparo);
 #endif
         pthread_cond_wait(&monitor->condition[disparo], &monitor->entrada);
         k = monitor->petri->solicitud_disparo(monitor->petri, disparo);
     }
     monitor->petri->disparar(monitor->petri, disparo);
-#if LOG
-    logueo(disparo);
-#endif
+
 #if DEBUG
-    printf("Si sensibilizada: %i -- disparo\n",disparo);
-        monitor->petri->toString(monitor->petri);
+        ESP_LOGW(TAG, "Si sensibilizada: %i -- disparo\n",disparo);
+    // printf("Si sensibilizada: %i -- disparo\n",disparo);
+    // monitor->petri->toString(monitor->petri);
 #endif
     for (int i = 0; i < TRANSICIONES; ++i)
     {

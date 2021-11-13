@@ -32,7 +32,8 @@ void app_main(void)
     procesador_de_petri_init(&petri);
     monitor_init(&monitor, &petri);
 
-
+ /*   device_init(&monitor, CAMARA);
+*/
     long int i;
     pthread_attr_t atrib;
     pthread_t c[TRANSICIONES];
@@ -48,7 +49,7 @@ void app_main(void)
     {
         pthread_join(c[i], NULL);
     }
-    
+
 }
 
 _Noreturn void *tarea(void *arg)
