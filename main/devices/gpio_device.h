@@ -1,16 +1,13 @@
-#ifndef CLASE_MONITOR_H
-#define CLASE_MONITOR_H
+#ifndef CLASE_GPIO_DEVICE_H
+#define CLASE_GPIO_DEVICE_H
 
 #include <sys/cdefs.h>
+#include "device.h"
 //
 // Created by agustin on 8/11/21.
 //
 
-#ifndef BLINK_DEVICE_GPIO_H
-#define BLINK_DEVICE_GPIO_H
 
-#endif //BLINK_DEVICE_GPIO_H
+_Noreturn void gpio_device_init(device_t *d, monitor_t *m);
 
-_Noreturn void gpio_device_init(void);
-
-#endif /* CLASE_MONITOR_H */
+#endif /* CLASE_GPIO_DEVICE_H */

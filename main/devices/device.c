@@ -3,14 +3,28 @@
 //
 
 #include "device.h"
+#include "gpio_device.h"
 
 
+int device_init(device_t *d, monitor_t *m, device_class_t c)
+{
+    d->monitor = m;
 
-int device_init(monitor_t *monitor, enum device_class class)
+    switch (c)
+    {
+        case CAMARA:
+            break;
+        case PUERTA:
+            break;
+        case BOTON:
+            gpio_device_init(d, m);
+            break;
+        case CONSULTA_MQTT:
+            break;
+        default:
 
- {
-
-    //gpio_device_init();
+            printf("Error en tipo de dispositivo\n");
+    }
 
     return 0;
 }
