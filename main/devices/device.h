@@ -7,6 +7,7 @@
 
 #include <monitor.h>
 
+
 typedef enum {
     CAMARA,
     PUERTA,
@@ -14,15 +15,15 @@ typedef enum {
     CONSULTA_MQTT
 } device_class_t;
 
-//typedef struct device_t device_t;
 
 typedef struct {
-    monitor_t *monitor;
     device_class_t class;
-    void (*device_handler)(void);
-    void (*tarea)(void *);
+    monitor_t *monitor;
+    pthread_t t;
+    pthread_attr_t attr;
+    _Noreturn void* (*tarea)(void *arg);
 } device_t;
 
-int device_init(device_t *d, monitor_t *m, device_class_t c); //agregar handlers
+int device_init(device_t *d, monitor_t *m, device_class_t c);
 
 #endif //BLINK_DEVICE_H

@@ -3,6 +3,7 @@ idf_component_register(SRCS "blink.c"
         "procesador_petri.c"
         "./devices/gpio_device.c"
         "./devices/device.c"
+        "./devices/cerradura_device.c"
         INCLUDE_DIRS
         "."
         "./devices")

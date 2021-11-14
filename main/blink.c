@@ -13,6 +13,7 @@
 #include "pthread.h"
 #include "monitor.h"
 #include "procesador_petri.h"
+#include "devices/device.h"
 
 
 #include "sdkconfig.h"
@@ -32,8 +33,9 @@ void app_main(void)
     procesador_de_petri_init(&petri);
     monitor_init(&monitor, &petri);
 
- /*   device_init(&monitor, CAMARA);
-*/
+    device_t cerradura_device;
+    device_init(&cerradura_device, &monitor, PUERTA);
+
     long int i;
     pthread_attr_t atrib;
     pthread_t c[TRANSICIONES];
