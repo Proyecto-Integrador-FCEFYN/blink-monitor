@@ -8,6 +8,8 @@
 //
 
 
-_Noreturn void gpio_device_init(device_t *d, monitor_t *m);
+void gpio_device_init(device_t *d, monitor_t *m);
+
+_Noreturn void* gpio_task_boton(void* arg);
 
 #endif /* CLASE_GPIO_DEVICE_H */
