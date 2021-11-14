@@ -19,7 +19,7 @@
 #include "driver/gpio.h"
 
 
-#define GPIO_INPUT_IO_0     0
+#define GPIO_INPUT_IO_0     0  // TODO: ELEGIR PIN PARA BOTON
 #define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) )
 #define ESP_INTR_FLAG_DEFAULT 0
 
@@ -27,17 +27,27 @@ static xQueueHandle gpio_evt_queue = NULL;
 
 static void IRAM_ATTR gpio_isr_handler_boton(void* arg)
 {
-    // T7, T8, T9
+
     uint32_t gpio_num = (uint32_t) arg;
     xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
 }
 
 _Noreturn void* gpio_task_boton(void* arg)
 {
+    // T7, T8, T9
     uint32_t io_num;
+    device_t *self = arg;
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
+            self->monitor->disparar(self->monitor, 7);
             printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level(io_num));
+            sleep(1);
+            self->monitor->disparar(self->monitor, 8);
+            printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level(io_num));
+            sleep(1);
+            self->monitor->disparar(self->monitor, 9);
+            printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level(io_num));
+            sleep(1);
         }
     }
 }

@@ -7,7 +7,7 @@
 #include "driver/gpio.h"
 
 
-#define GPIO_OUTPUT_IO_0    4
+#define GPIO_OUTPUT_IO_0    4 // FLASH
 
 //#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_1))
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0))
@@ -15,11 +15,15 @@
 _Noreturn void *gpio_task_cerradura(void* arg)
 {
     device_t *self = arg;
-    self->monitor->disparar(self->monitor,0);
-    //T11, T3, T4
     while(1)
     {
-
+    //T11, T3, T4
+    self->monitor->disparar(self->monitor,6);
+    sleep(1);
+    self->monitor->disparar(self->monitor,3);
+    sleep(1);
+    self->monitor->disparar(self->monitor,4);
+    sleep(1);
     }
 }
 
