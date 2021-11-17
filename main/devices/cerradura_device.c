@@ -17,13 +17,13 @@ _Noreturn void *gpio_task_cerradura(void* arg)
     device_t *self = arg;
     while(1)
     {
-    //T11, T3, T4
-    self->monitor->disparar(self->monitor,6);
-    sleep(1);
-    self->monitor->disparar(self->monitor,3);
-    sleep(1);
-    self->monitor->disparar(self->monitor,4);
-    sleep(1);
+    //T6, T3, T4
+    self->monitor->disparar(self->monitor,7);
+    //sleep(1);
+    self->monitor->disparar(self->monitor,8);
+   // sleep(1);
+    self->monitor->disparar(self->monitor,9);
+   // sleep(1);
     }
 }
 

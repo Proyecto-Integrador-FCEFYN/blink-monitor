@@ -33,24 +33,32 @@ void app_main(void)
     procesador_de_petri_init(&petri);
     monitor_init(&monitor, &petri);
 
-    device_t cerradura_device;
-    device_init(&cerradura_device, &monitor, PUERTA);
-
-    long int i;
-    pthread_attr_t atrib;
-    pthread_t c[TRANSICIONES];
-    atrib.contentionscope = PTHREAD_SCOPE_SYSTEM;
-    atrib.schedpolicy = SCHED_RR;
-    pthread_attr_init(&atrib);
-
-    for (i=0;i<TRANSICIONES;i++)
+    device_t boton_device;
+    device_init(&boton_device, &monitor, BOTON);
+//    device_t cerradura_device;
+//    device_init(&cerradura_device, &monitor, PUERTA);
+///Muy importante que esta función no muera.
+    while (1)
     {
-        pthread_create(&c[i], &atrib, tarea, (void *) i);
+            printf("ok!\n");
+        vTaskDelay(1000 / portTICK_RATE_MS);
     }
-    for (i=0;i<TRANSICIONES;i++)
-    {
-        pthread_join(c[i], NULL);
-    }
+
+//    long int i;
+//    pthread_attr_t atrib;
+//    pthread_t c[TRANSICIONES];
+//    atrib.contentionscope = PTHREAD_SCOPE_SYSTEM;
+//    atrib.schedpolicy = SCHED_RR;
+//    pthread_attr_init(&atrib);
+//
+//    for (i=0;i<TRANSICIONES;i++)
+//    {
+//        pthread_create(&c[i], &atrib, tarea, (void *) i);
+//    }
+//    for (i=0;i<TRANSICIONES;i++)
+//    {
+//        pthread_join(c[i], NULL);
+//    }
 
 }
 

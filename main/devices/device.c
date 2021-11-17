@@ -5,6 +5,7 @@
 #include "device.h"
 #include "gpio_device.h"
 #include "cerradura_device.h"
+#include "cam.h"
 
 
 int device_init(device_t *d, monitor_t *m, device_class_t c)
@@ -13,8 +14,8 @@ int device_init(device_t *d, monitor_t *m, device_class_t c)
     {
         case CAMARA:
             d->class = CAMARA;
-            //TODO: Init de la camara.
-            //TODO: Task Camara
+            init_camera(d, m);
+            d->tarea = camera_task;
             break;
         case PUERTA:
             d->class = PUERTA;

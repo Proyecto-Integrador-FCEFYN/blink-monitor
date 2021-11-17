@@ -7,8 +7,8 @@
 #ifndef PTHREAD_MONITOR_IA32_MACROS_H
 #define PTHREAD_MONITOR_IA32_MACROS_H
 
-#define PLAZAS 11
-#define TRANSICIONES 10
+#define PLAZAS 10
+#define TRANSICIONES 11
 #define DEBUG 1
 #define LOG 0
 
@@ -24,7 +24,7 @@
 -1,0,1,0,0,1,0,0,0,0,0 ,\
 0,0,0,0,0,0,1,0,-1,0,1 ,\
 0,0,0,0,0,0,0,0,1,-1,0 ,\
-0,0,0,0,0,0,0,1,-1,0,0
+0,0,0,0,0,0,0,1,-1,0,0 
 
 #define MARCADO \
 0,0,0,0,1,0,1,1,0,0
