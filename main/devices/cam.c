@@ -60,10 +60,13 @@ static camera_config_t camera_config = {
 _Noreturn void* camera_task(void* arg)
 {
     while(1) {
+        device_t *self = arg;
+        //aca poner disparos.
+        self->monitor->disparar(self->monitor, 1);
         ESP_LOGI(TAG, "Taking picture...");
         pic = esp_camera_fb_get();
         // use pic->buf to access the image
-        ESP_LOGI(TAG, "Picture taken! Its size was: %zu bytes", pic->len);
+        ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic->len);
         esp_camera_fb_return(pic);
         vTaskDelay(5000 / portTICK_RATE_MS);
     }
