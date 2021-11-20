@@ -6,31 +6,32 @@
 #include "boton_device.h"
 #include "cerradura_device.h"
 #include "cam.h"
+#include "mqtt_device.h"
 
 
-int device_init(device_t *d, monitor_t *m, device_class_t c)
+int device_init(device_t *d, monitor_t *m, device_tipo_t c)
 {
     switch (c)
     {
         case CAMARA:
-            d->class = CAMARA;
+            d->tipo = CAMARA;
             init_camera(d, m);
             d->tarea = camera_task;
             break;
         case PUERTA:
-            d->class = PUERTA;
+            d->tipo = PUERTA;
             cerradura_device_init(d, m);
             d->tarea = gpio_task_cerradura;
             break;
         case BOTON:
-            d->class = BOTON;
+            d->tipo = BOTON;
             gpio_device_init(d, m);
             d->tarea = gpio_task_boton;
             break;
         case CONSULTA_MQTT:
-            d->class = CONSULTA_MQTT;
-            //TODO: Init de MQTT
-            //TODO: Task MQTT
+            d->tipo = CONSULTA_MQTT;
+            mqtt_device_init(d, m);
+            d->tarea = mqtt_device_task;
             break;
         default:
             printf("Error en tipo de dispositivo\n");

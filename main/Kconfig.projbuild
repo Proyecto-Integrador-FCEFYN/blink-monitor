@@ -11,6 +11,16 @@ menu "Example Configuration"
 
             GPIOs 35-39 are input-only so cannot be used as outputs.
 
+    config BROKER_URL
+        string "Broker URL"
+        default "mqtt://raspi"
+        help
+            URL of the broker to connect to
+
+    config BROKER_URL_FROM_STDIN
+        bool
+        default y if BROKER_URL = "FROM_STDIN"
+
 endmenu
 
 menu "Camera configuration"
