@@ -34,6 +34,7 @@ static void IRAM_ATTR gpio_isr_handler_boton(void* arg)
 
 _Noreturn void* gpio_task_boton(void* arg)
 {
+    vTaskDelay(10);
 
     printf("entre a la task del boton!\n");
     // T7, T8, T9
