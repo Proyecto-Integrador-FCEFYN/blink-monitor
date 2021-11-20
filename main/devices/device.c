@@ -3,7 +3,7 @@
 //
 
 #include "device.h"
-#include "gpio_device.h"
+#include "boton_device.h"
 #include "cerradura_device.h"
 #include "cam.h"
 

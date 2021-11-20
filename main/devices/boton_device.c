@@ -3,7 +3,7 @@
 // Created by agustin on 8/11/21.
 //
 
-#include "gpio_device.h"
+#include "boton_device.h"
 
 /* GPIO Example
    This example code is in the Public Domain (or CC0 licensed, at your option.)

@@ -22,16 +22,22 @@
 #define _POSIX_PRIORITY_SCHEDULING
 
 
-_Noreturn void *tarea(void *arg);
+//_Noreturn void *tarea(void *arg);
 
-monitor_t monitor;
+
 
 
 void app_main(void)
 {
+    monitor_t monitor;
     procesador_petri_t petri;
     procesador_de_petri_init(&petri);
     monitor_init(&monitor, &petri);
+
+    //ACA EL ORDEN IMPORTA POR COMO SE ACOMODA EL HEAP.
+    //DEBE SER EL PRIMER DISPOSITIVO EN INICIAR!
+    device_t cam_device;
+    device_init(&cam_device, &monitor,CAMARA);
 
     device_t boton_device;
     device_init(&boton_device, &monitor, BOTON);
@@ -62,11 +68,11 @@ void app_main(void)
 
 }
 
-_Noreturn void *tarea(void *arg)
-{
-    long int miid = (long int) arg;
-    while (1)
-    {
-        monitor.disparar(&monitor,(int) miid);
-    }
-}
+//_Noreturn void *tarea(void *arg)
+//{
+//    long int miid = (long int) arg;
+//    while (1)
+//    {
+//        monitor.disparar(&monitor,(int) miid);
+//    }
+//}

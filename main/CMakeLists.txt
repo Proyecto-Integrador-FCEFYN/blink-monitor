@@ -1,7 +1,7 @@
 idf_component_register(SRCS "blink.c"
         "monitor.c"
         "procesador_petri.c"
-        "./devices/gpio_device.c"
+        "devices/boton_device.c"
         "./devices/device.c"
         "./devices/cerradura_device.c"
         "./devices/cam.c"

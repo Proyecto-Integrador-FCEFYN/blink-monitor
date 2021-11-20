@@ -1,7 +1,7 @@
 #include <esp_log.h>
 #include "monitor.h"
 #include "macros.h"
-#include "gpio_device.h"
+#include "boton_device.h"
 
 static const char* TAG = "Monitor";
 
