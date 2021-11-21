@@ -40,10 +40,12 @@ _Noreturn void* mqtt_device_task(void* arg)
     {
         device_t *self = arg;
         self->monitor->disparar(self->monitor, 10);
-        int msg_id = esp_mqtt_client_publish(client, "/topic/foto", (char*) pic->buf, (int) pic->len, 0, 0);
-        ESP_LOGI(TAG, "Agustin probando, ID: %i" , msg_id);
+        if(self->enabled)
+        {
+            int msg_id = esp_mqtt_client_publish(client, TOPIC_FOTO, (char*) pic->buf, (int) pic->len, 0, 0);
+            ESP_LOGI(TAG, "Agustin probando, ID: %i" , msg_id);
+        }
         vTaskDelay(10);
-
     }
 }
 
@@ -141,7 +143,12 @@ void mqtt_device_init(device_t *d, monitor_t *m)
     ESP_ERROR_CHECK(example_connect());
 
     esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = CONFIG_BROKER_URL,
+//            .uri = CONFIG_BROKER_URL,
+            .host = "24.232.22.21",
+            .port = 27015,
+            .username = "agus",
+            .password = "tin",
+
     };
 
 //    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);

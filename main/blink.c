@@ -37,6 +37,10 @@ void app_main(void)
   device_t cerradura_device;
   device_init(&cerradura_device, &monitor, PUERTA);
 
+  // ENABLE
+  device_enable(&cam_device);
+  device_enable(&mqtt_device);
+
 //  Muy importante que esta función no muera.
     while (1)
     {

@@ -5,6 +5,9 @@
 #ifndef BLINK_MQTT_DEVICE_H
 #define BLINK_MQTT_DEVICE_H
 
+#define TOPIC_DEBUG "/debug/log"
+#define TOPIC_FOTO "/topic/foto"
+
 
 #include "device.h"
 

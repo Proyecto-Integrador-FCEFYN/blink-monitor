@@ -38,6 +38,7 @@ int device_init(device_t *d, monitor_t *m, device_tipo_t c)
     }
 
     d->monitor = m;
+    d->enabled = 0;
 
     // Atributos del thread.
     d->attr.contentionscope = PTHREAD_SCOPE_SYSTEM;
@@ -45,5 +46,10 @@ int device_init(device_t *d, monitor_t *m, device_tipo_t c)
     pthread_attr_init(&d->attr);
     pthread_create(&d->t, &d->attr, d->tarea, (void *) d);
 
+    return 0;
+}
+
+int device_enable(device_t *d){
+    d->enabled = 1;
     return 0;
 }
