@@ -1,22 +1,12 @@
-#include <sys/cdefs.h>
 //
 // Created by agustin on 8/11/21.
 //
 
 #include "boton_device.h"
 
-/* GPIO Example
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/queue.h"
+#include <sys/cdefs.h>
 #include "driver/gpio.h"
-
+#include <stdio.h>
 
 #define GPIO_INPUT_IO_0     16  // TODO: ELEGIR PIN PARA BOTON
 #define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) )
@@ -34,16 +24,14 @@ static void IRAM_ATTR gpio_isr_handler_boton(void* arg)
 
 _Noreturn void* gpio_task_boton(void* arg)
 {
-    vTaskDelay(10);
-
     printf("entre a la task del boton!\n");
     // T7, T8, T9
-    uint32_t io_num;
-    device_t *self = arg;
-    for(;;) {
+//    uint32_t io_num;
+//    device_t *self = arg;
+    while(1) {
         //if(!gpio_get_level(GPIO_INPUT_IO_0)) {
             printf("lei un valor en el pin!\n");
-            vTaskDelay(1000 / portTICK_RATE_MS);
+        sleep(5);
 
         printf("Lei: %i\n",gpio_get_level(16));
 

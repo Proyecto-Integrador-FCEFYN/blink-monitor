@@ -27,13 +27,17 @@ _Noreturn void* camera_task(void* arg)
     while(1) {
         device_t *self = arg;
         //aca poner disparos.
-        // self->monitor->disparar(self->monitor, 1);
-        vTaskDelay(5000 / portTICK_RATE_MS);
+        self->monitor->disparar(self->monitor, 7);
+        self->monitor->disparar(self->monitor, 8);
+
+        sleep(5);
         ESP_LOGI(TAG, "Taking picture...");
-        //   pic = esp_camera_fb_get();
+        esp_camera_fb_return(pic);
+        pic = esp_camera_fb_get();
+
         // use pic->buf to access the image
-        //   ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic->len);
-        //  esp_camera_fb_return(pic);
+        ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic->len);
+        self->monitor->disparar(self->monitor, 9);
     }
 }
 
@@ -63,7 +67,8 @@ void init_camera(device_t *d, monitor_t *m)
             .ledc_timer = LEDC_TIMER_0,
             .ledc_channel = LEDC_CHANNEL_0,
 
-            .pixel_format = PIXFORMAT_RGB565, //YUV422,GRAYSCALE,RGB565,JPEG
+//            .pixel_format = PIXFORMAT_RGB565, //YUV422,GRAYSCALE,RGB565,JPEG
+            .pixel_format = PIXFORMAT_JPEG, //YUV422,GRAYSCALE,RGB565,JPEG
             .frame_size = FRAMESIZE_QVGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
 
             .jpeg_quality = 12, //0-63 lower number means higher quality
@@ -76,6 +81,7 @@ void init_camera(device_t *d, monitor_t *m)
     {
         ESP_LOGE(TAG, "Camera Init Failed");
     }
+    pic = esp_camera_fb_get();
 }
 
 

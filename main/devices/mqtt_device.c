@@ -6,10 +6,10 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <stddef.h>
+//#include <stddef.h>
 #include <string.h>
 #include <monitor.h>
-#include "esp_wifi.h"
+//#include "esp_wifi.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "esp_event.h"
@@ -18,23 +18,30 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "freertos/queue.h"
-
-#include "lwip/sockets.h"
-#include "lwip/dns.h"
-#include "lwip/netdb.h"
+//#include "freertos/semphr.h"
+//#include "freertos/queue.h"
+//
+//#include "lwip/sockets.h"
+//#include "lwip/dns.h"
+//#include "lwip/netdb.h"
 
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "device.h"
+#include "cam.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
+
+static esp_mqtt_client_handle_t client;
 
 _Noreturn void* mqtt_device_task(void* arg)
 {
     while (1)
     {
+        device_t *self = arg;
+        self->monitor->disparar(self->monitor, 10);
+        int msg_id = esp_mqtt_client_publish(client, "/topic/foto", (char*) pic->buf, (int) pic->len, 0, 0);
+        ESP_LOGI(TAG, "Agustin probando, ID: %i" , msg_id);
         vTaskDelay(10);
 
     }
@@ -137,7 +144,8 @@ void mqtt_device_init(device_t *d, monitor_t *m)
         .uri = CONFIG_BROKER_URL,
     };
 
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+//    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+    client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, client);
     esp_mqtt_client_start(client);
 }
