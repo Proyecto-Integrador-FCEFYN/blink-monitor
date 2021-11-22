@@ -6,8 +6,10 @@ idf_component_register(SRCS "blink.c"
         "devices/cerradura_device.c"
         "devices/cam.c"
         "devices/mqtt_device.c"
+        "manejador_eventos/manejador_eventos.c"
         INCLUDE_DIRS
         "."
+        "./manejador_eventos"
         "./devices")
 
 target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-error=missing-braces)

@@ -26,8 +26,6 @@ _Noreturn void* camera_task(void* arg)
 {
     while(1) {
         device_t *self = arg;
-        //aca poner disparos.
-        self->monitor->disparar(self->monitor, 7);
         self->monitor->disparar(self->monitor, 8);
 
         sleep(5);
@@ -37,7 +35,6 @@ _Noreturn void* camera_task(void* arg)
 
         // use pic->buf to access the image
         ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic->len);
-        self->monitor->disparar(self->monitor, 9);
     }
 }
 

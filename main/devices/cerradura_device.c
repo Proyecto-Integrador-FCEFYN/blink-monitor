@@ -5,20 +5,33 @@
 #include "cerradura_device.h"
 
 #include <sys/cdefs.h>
+#include <esp_log.h>
+#include "freertos/FreeRTOS.h"
+#include <freertos/task.h>
 #include "driver/gpio.h"
 
 
 #define GPIO_OUTPUT_IO_0    4 // FLASH
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0))
 
+static const char *TAG = "CERRADURA";
+
 _Noreturn void *gpio_task_cerradura(void* arg)
 {
     device_t *self = arg;
     while(1)
     {
-        //T6, T3, T4
-        self->monitor->disparar(self->monitor,3);
-        sleep(1);
+        if (self->enabled)
+        {
+            self->monitor->disparar(self->monitor,3);
+            gpio_set_level(GPIO_OUTPUT_IO_0, 1);
+            ESP_LOGI(TAG, "T3\t Desbloquear cerradura");
+            sleep(1);
+            self->monitor->disparar(self->monitor,4);
+            gpio_set_level(GPIO_OUTPUT_IO_0, 0);
+            ESP_LOGI(TAG, "T4\t Bloquear cerradura");
+        }
+        vTaskDelay(10);
     }
 }
 
@@ -34,4 +47,5 @@ void cerradura_device_init(device_t *d, monitor_t *m)
     io_conf.pull_down_en = 0; //disable pull-down mode
     io_conf.pull_up_en = 0; //disable pull-up mode
     gpio_config(&io_conf); //configure GPIO with the given settings
+    gpio_set_level(GPIO_OUTPUT_IO_0, 0);
 }

@@ -30,16 +30,16 @@ void app_main(void)
     device_init(&mqtt_device, &monitor, CONSULTA_MQTT);
     device_t cam_device;
     device_init(&cam_device, &monitor,CAMARA);
-//ACA ESTA EL PROBLEMA
-//  device_t boton_device;
-//  device_init(&boton_device, &monitor, BOTON);
-// HASTA ACA
-  device_t cerradura_device;
-  device_init(&cerradura_device, &monitor, PUERTA);
+    device_t boton_device;
+    device_init(&boton_device, &monitor, BOTON);
+    device_t cerradura_device;
+    device_init(&cerradura_device, &monitor, PUERTA);
 
-  // ENABLE
-  device_enable(&cam_device);
-  device_enable(&mqtt_device);
+    // ENABLE
+    device_enable(&cam_device);
+    device_enable(&mqtt_device);
+    device_enable(&boton_device);
+    device_enable(&cerradura_device);
 
 //  Muy importante que esta función no muera.
     while (1)

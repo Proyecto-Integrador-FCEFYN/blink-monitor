@@ -29,21 +29,26 @@
 #include "mqtt_client.h"
 #include "device.h"
 #include "cam.h"
+#include "macros.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
 
 static esp_mqtt_client_handle_t client;
+static device_t *device;
+static int bandera = 0;
 
 _Noreturn void* mqtt_device_task(void* arg)
 {
     while (1)
     {
         device_t *self = arg;
-        self->monitor->disparar(self->monitor, 10);
         if(self->enabled)
         {
+            self->monitor->disparar(self->monitor, 9);
             int msg_id = esp_mqtt_client_publish(client, TOPIC_FOTO, (char*) pic->buf, (int) pic->len, 0, 0);
             ESP_LOGI(TAG, "Agustin probando, ID: %i" , msg_id);
+
+
         }
         vTaskDelay(10);
     }
@@ -68,6 +73,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+            msg_id = esp_mqtt_client_subscribe(client, "/topic/confirm", 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
@@ -95,6 +103,16 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
+            char* topico = "/topic/confirm";
+            int i = strncmp(topico, event->topic, strlen(topico) );
+            printf("EL VALOR DE i es %i\n", i);
+
+            if (i == 0 )
+            {
+                ESP_LOGI(TAG,"LEVANTE LA BANDERAaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                    device->monitor->disparar(device->monitor, 6);
+            }
+
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -115,6 +133,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
+
     mqtt_event_handler_cb(event_data);
 }
 
@@ -143,13 +162,12 @@ void mqtt_device_init(device_t *d, monitor_t *m)
     ESP_ERROR_CHECK(example_connect());
 
     esp_mqtt_client_config_t mqtt_cfg = {
-//            .uri = CONFIG_BROKER_URL,
-            .host = "24.232.22.21",
-            .port = 27015,
-            .username = "agus",
-            .password = "tin",
-
+            .host = MY_MQTT_HOST,
+            .port = MY_MQTT_PORT,
+            .username = MY_MQTT_USER,
+            .password = MY_MQTT_PASS,
     };
+    device = d;
 
 //    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
     client = esp_mqtt_client_init(&mqtt_cfg);
