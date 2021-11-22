@@ -69,20 +69,20 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-            ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+//            msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
+//            ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+//            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+//            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/confirm", 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-            msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-            ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
+//            msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
+//            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+//
+//            msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
+//            ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -109,8 +109,20 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 
             if (i == 0 )
             {
-                ESP_LOGI(TAG,"LEVANTE LA BANDERAaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                char *msg_no = "rechazado";
+                char *msg_si = "aceptado";
+                if (strncmp(msg_no, event->data, strlen(msg_no))== 0)
+                {
+                    ESP_LOGI(TAG,"EL SISTEMA HA DENEGADO EL ACCESO");
+                    device->monitor->disparar(device->monitor, 10);
+                }
+                else if (strncmp(msg_si, event->data, strlen(msg_si)) == 0)
+                {
+                    ESP_LOGI(TAG,"EL SISTEMA HA PERMITIDO EL ACCESO");
                     device->monitor->disparar(device->monitor, 6);
+                }
+                else
+                    ESP_LOGI(TAG,"EL MENSAJE RECIBIDO ES ERRONEO");
             }
 
             break;
