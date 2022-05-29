@@ -4,41 +4,27 @@
 
 #include "cam.h"
 
-
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include <esp_log.h>
 #include <esp_system.h>
 #include <nvs_flash.h>
 #include <sys/param.h>
-#include <string.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+//#include <string.h>
 
 #include "esp_camera.h"
 #include "device.h"
-#include "monitor.h"
-
 
 static const char *TAG = "CAMARA";
 
-
-_Noreturn void* camera_task(void* arg)
+void camera_sacarfoto(dev_camera_t *self)
 {
-    while(1) {
-        device_t *self = arg;
-        self->monitor->disparar(self->monitor, 8);
-
-        sleep(5);
-        ESP_LOGI(TAG, "Taking picture...");
-        esp_camera_fb_return(pic);
-        pic = esp_camera_fb_get();
-
-        // use pic->buf to access the image
-        ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic->len);
-    }
+    esp_camera_fb_return(self->pic);
+    self->pic = esp_camera_fb_get();
+    ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", self->pic->len);
 }
 
-void init_camera(device_t *d, monitor_t *m)
+void camera_device_init(device_t *self)
 {
     static camera_config_t camera_config = {
             .pin_pwdn = CAM_PIN_PWDN,
@@ -78,7 +64,8 @@ void init_camera(device_t *d, monitor_t *m)
     {
         ESP_LOGE(TAG, "Camera Init Failed");
     }
-    pic = esp_camera_fb_get();
+    dev_camera_t *this_camera_dev = self->context;
+    this_camera_dev->pic = esp_camera_fb_get();
 }
 
 

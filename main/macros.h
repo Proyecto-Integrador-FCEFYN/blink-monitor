@@ -2,6 +2,7 @@
 // Created by agustin on 21/10/21.
 // Aca vamos a centralizar las constantes a lo largo del proyecto
 // e incluirlas en los archivos que las necesiten
+// DESPUES SE PUEDEN PONER EN EL MENUCONFIG!
 //
 
 #ifndef PTHREAD_MONITOR_IA32_MACROS_H
@@ -10,10 +11,20 @@
 #define DEBUG 1
 #define LOG 0
 
-//RED DE PETRI
+// CONFIGURACION TOPICS MQTT
+#define HOST "lac1"
+// RECURSOS
+#define PUERTA_TOPIC "puerta"
+#define CAMARA_TOPIC "camara"
+#define CONFIRM_TOPIC "confirm"
+#define DEBUG_TOPIC "debug"
+
+
+//CONFIGURACION RED DE PETRI
 
 #define PLAZAS 10
 #define TRANSICIONES 11
+#define HILOS 4
 
 #define MARCADO \
 0,0,0,0,1,0,1,1,0,0
@@ -34,13 +45,37 @@
 // POR AHORA ESTAN EN EL MENUCONFIG
 
 // CONFIGURACION MQTT
-#define MY_MQTT_HOST "24.232.22.21"
-#define MY_MQTT_PORT 27015
+//#define MY_MQTT_HOST "24.232.22.21"
+#define MY_MQTT_HOST "raspi"
+//#define MY_MQTT_PORT 27015
+#define MY_MQTT_PORT 1883
 #define MY_MQTT_USER "agus"
 #define MY_MQTT_PASS "tin"
 
 // CONFIGURACION BOTON DEVICE
-//#define MY_GPIO_BOTON
-//#define MY_DEBOUNCE_TIME
+#define BOTON_GPIO 2
+#define BOTON_DEBOUNCE_TIME 50
+
+
+// CONFIGURACION RFID
+#define RFID_TX_PORT
+#define RFID_RX_PORT
+#define RFID_TOPIC topic/rfid
+
+// CONFIGURACION CERRADURA
+#define CERRADURA_GPIO 4
+#define CERRADURA_TIMEOUT 10 //segundos
+
+
+// EVENTOS DE LAS TRANSICIONES
+// HANDLER MQTT T
+#define T_PERMITIDO_BOTON 1
+#define T_DENEGADO_BOTON 2
+#define T_PERMITIDO_RFID 3
+#define T_DENEGADO_RFID 4
+// HANDLER RFID T
+#define T_EVENTO_RFID 0
+// HANDLER BOTON T
+#define T_EVENTO_BOTON 7
 
 #endif //PTHREAD_MONITOR_IA32_MACROS_H

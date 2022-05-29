@@ -31,10 +31,13 @@
 #define CAM_PIN_PCLK 22
 #endif //BOARD_ESP32CAM_AITHINKER
 
-camera_fb_t *pic;
+typedef struct
+{
+   camera_fb_t *pic;
+} dev_camera_t;
 
-void init_camera(device_t *d, monitor_t *m);
+void camera_device_init(device_t *self);
 
-_Noreturn void* camera_task(void* arg);
+void camera_sacarfoto(dev_camera_t *self);
 
 #endif //BLINK_CAM_H

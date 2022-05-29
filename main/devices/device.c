@@ -3,53 +3,39 @@
 //
 
 #include "device.h"
-#include "boton_device.h"
 #include "cerradura_device.h"
 #include "cam.h"
-#include "mqtt_device.h"
+#include "comm_dev.h"
+#include "esp_log.h"
 
+static const char *TAG = "DEVICE";
 
-int device_init(device_t *d, monitor_t *m, device_tipo_t c)
+int device_init(device_t *d, device_tipo_t c)
 {
     switch (c)
     {
-        case CAMARA:
-            d->tipo = CAMARA;
-            init_camera(d, m);
-            d->tarea = camera_task;
+        case D_CAMARA:
+            d->tipo = D_CAMARA;
+            dev_camera_t *camara = malloc(sizeof(dev_camera_t));
+            d->context = camara;
+            d->init = camera_device_init;
             break;
-        case PUERTA:
-            d->tipo = PUERTA;
-            cerradura_device_init(d, m);
-            d->tarea = gpio_task_cerradura;
+        case D_PUERTA:
+            d->tipo = D_PUERTA;
+            dev_cerradura_t *cerradura = malloc(sizeof(dev_cerradura_t));
+            d->context = cerradura;
+            d->init = cerradura_device_init;
             break;
-        case BOTON:
-            d->tipo = BOTON;
-            gpio_device_init(d, m);
-            d->tarea = gpio_task_boton;
-            break;
-        case CONSULTA_MQTT:
-            d->tipo = CONSULTA_MQTT;
-            mqtt_device_init(d, m);
-            d->tarea = mqtt_device_task;
+        case D_COMM:
+            d->tipo = D_COMM;
+            dev_comm_t *comm = malloc(sizeof(dev_comm_t));
+            d->context = comm;
+            d->init = comm_device_init;
             break;
         default:
-            printf("Error en tipo de dispositivo\n");
+            ESP_LOGE(TAG,"Error en tipo de dispositivo");
     }
+    d->init(d);
 
-    d->monitor = m;
-    d->enabled = 0;
-
-    // Atributos del thread.
-    d->attr.contentionscope = PTHREAD_SCOPE_SYSTEM;
-    d->attr.schedpolicy = SCHED_RR;
-    pthread_attr_init(&d->attr);
-    pthread_create(&d->t, &d->attr, d->tarea, (void *) d);
-
-    return 0;
-}
-
-int device_enable(device_t *d){
-    d->enabled = 1;
     return 0;
 }
