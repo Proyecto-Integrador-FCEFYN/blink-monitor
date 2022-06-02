@@ -29,6 +29,9 @@
 #define MARCADO \
 0,0,0,0,1,0,1,1,0,0
 
+#define PERENNE \
+0,0,0,0,0,0,0,0,0,0
+
 #define INCIDENCIA \
 1,-1,0,0,0,0,0,0,0,0,0 ,\
 0,1,-1,0,0,-1,0,0,0,0,0,\
@@ -78,4 +81,6 @@
 // HANDLER BOTON T
 #define T_EVENTO_BOTON 7
 
+
+#define NULL_TRANSITION -1
 #endif //PTHREAD_MONITOR_IA32_MACROS_H

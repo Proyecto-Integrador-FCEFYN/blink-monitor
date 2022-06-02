@@ -16,15 +16,22 @@ void monitor_disparar2(monitor_t *monitor, int disparo)
     {
 #if DEBUG
         ESP_LOGW(TAG, "No Sensibilizada: %i -- espera\n", disparo);
-        //printf("No Sensibilizada: %i -- espera\n", disparo);
 #endif
-        pthread_cond_wait(&monitor->condition[disparo], &monitor->entrada);
+        if(monitor->petri->matriz_perennes[disparo])
+        {
+            pthread_cond_wait(&monitor->condition[disparo], &monitor->entrada);
+        }
+        else
+        {
+            ESP_LOGW(TAG, "No Sensibilizada No Perenne: %i -- salgo\n", disparo);
+            return;
+        }
         k = monitor->petri->solicitud_disparo(monitor->petri, disparo);
     }
     monitor->petri->disparar(monitor->petri, disparo);
 
 #if DEBUG
-        ESP_LOGW(TAG, "Si sensibilizada: %i -- disparo\n",disparo);
+    ESP_LOGW(TAG, "Si sensibilizada: %i -- disparo\n",disparo);
     // printf("Si sensibilizada: %i -- disparo\n",disparo);
     // monitor->petri->toString(monitor->petri);
 #endif
