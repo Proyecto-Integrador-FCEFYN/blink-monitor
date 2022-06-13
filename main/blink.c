@@ -58,6 +58,7 @@ void init_communications()
 
 void app_main(void) {
     init_communications();
+    esp_mqtt_client_handle_t client = NULL;
     monitor_t monitor;
     procesador_petri_t petri;
     procesador_de_petri_init(&petri);
@@ -70,7 +71,7 @@ void app_main(void) {
     rfid_handler_t rfid_handler;
     rfid_handler_init(&rfid_handler, &monitor);
     mqtt_handler_t mqtt_handler;
-    mqtt_handler_init(&mqtt_handler, &monitor);
+    mqtt_handler_init(&mqtt_handler, &client,&monitor);
 
     // Init devices
     dev_camera_t cam_device;
@@ -78,7 +79,7 @@ void app_main(void) {
     dev_cerradura_t cerradura_dev;
     cerradura_device_init(&cerradura_dev,2);
     dev_comm_t comm_device;
-    comm_device_init(&comm_device,&cam_device,&rfid_handler);
+    comm_device_init(&comm_device, &client, &cam_device, &rfid_handler);
 
     // SOFTWARE
     segmento_t segmentos[3];

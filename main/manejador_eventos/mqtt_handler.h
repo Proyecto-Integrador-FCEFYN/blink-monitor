@@ -14,7 +14,7 @@ typedef struct {
     int enabled;
 } mqtt_handler_t;
 
-void mqtt_handler_init(mqtt_handler_t *h, monitor_t *m);
+void mqtt_handler_init(mqtt_handler_t *self, esp_mqtt_client_handle_t *cliente, monitor_t *monitor);
 
 _Noreturn void *mqtt_handler_task(void* arg);
 

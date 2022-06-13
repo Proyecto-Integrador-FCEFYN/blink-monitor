@@ -18,7 +18,7 @@ typedef struct
 
 
 
-void comm_device_init(dev_comm_t *self, dev_camera_t *cam_device, rfid_handler_t *rfid_device);
+void comm_device_init(dev_comm_t *self, esp_mqtt_client_handle_t *client, dev_camera_t *cam_device, rfid_handler_t *rfid_device );
 void comm_enviarfoto(dev_comm_t *self);
 void comm_rechazaringreso(dev_comm_t *self);
 void comm_aceptaringreso(dev_comm_t *self);

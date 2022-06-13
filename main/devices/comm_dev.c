@@ -10,25 +10,18 @@
 
 static const char *TAG = "COMM";
 
-void comm_device_init(dev_comm_t *self, dev_camera_t *cam_device, rfid_handler_t *rfid_device )
+void comm_device_init(dev_comm_t *self, esp_mqtt_client_handle_t *client, dev_camera_t *cam_device, rfid_handler_t *rfid_device )
 {
-    self->cam_device = cam_device;
-    self->rfid_device = rfid_device;
-
-    esp_mqtt_client_config_t mqtt_cfg = {
-            .host = MY_MQTT_HOST,
-            .port = MY_MQTT_PORT,
-//            .username = MY_MQTT_USER,
-//            .password = MY_MQTT_PASS,
-            .user_context = self
-    };
-
-//    dev_comm_t  self = self->context;
-//    *self->client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-
-    ESP_ERROR_CHECK(esp_mqtt_client_start(client));
-    self->client = client;
+    if(client == NULL)
+    {
+        ESP_LOGE(TAG, "Cliente MQTT no inicializado!");
+        return;
+    } else
+    {
+        self->cam_device = cam_device;
+        self->rfid_device = rfid_device;
+        self->client = *client;
+    }
 }
 
 static int send_msg(dev_comm_t *self, char *data, char *topic)

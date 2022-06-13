@@ -109,7 +109,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 
-void mqtt_handler_init(mqtt_handler_t *self, monitor_t *monitor)
+void mqtt_handler_init(mqtt_handler_t *self, esp_mqtt_client_handle_t *cliente, monitor_t *monitor)
 {
     esp_mqtt_client_config_t mqtt_cfg = {
             .host = MY_MQTT_HOST,
@@ -118,12 +118,12 @@ void mqtt_handler_init(mqtt_handler_t *self, monitor_t *monitor)
 //            .password = MY_MQTT_PASS,
             .user_context = self
     };
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_register_event(client,
+    *cliente = esp_mqtt_client_init(&mqtt_cfg);
+    esp_mqtt_client_register_event(*cliente,
                                    ESP_EVENT_ANY_ID,
                                    mqtt_event_handler,
                                    NULL);
-    esp_mqtt_client_start(client);
+    esp_mqtt_client_start(*cliente);
 
     self->monitor = monitor;
     self->enabled = 0;
