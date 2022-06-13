@@ -6,7 +6,6 @@
 
 #include <sys/cdefs.h>
 #include <hal/gpio_types.h>
-#include "device.h"
 
 typedef struct
 {
@@ -14,9 +13,10 @@ typedef struct
     unsigned int estado;
     unsigned int timeout_limit;
     int timeout_count;
+    int duracion_apertura;
 } dev_cerradura_t;
 
-void cerradura_device_init(device_t *d);
+void cerradura_device_init(dev_cerradura_t *d, int duracion_cerradura);
 
 void cerradura_abrirpuerta(dev_cerradura_t *self);
 void cerradura_esperar_timeout(dev_cerradura_t *self);

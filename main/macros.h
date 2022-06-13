@@ -15,6 +15,7 @@
 #define HOST "lac1"
 // RECURSOS
 #define PUERTA_TOPIC "puerta"
+#define RFID_TOPIC "rfid"
 #define CAMARA_TOPIC "camara"
 #define CONFIRM_TOPIC "confirm"
 #define DEBUG_TOPIC "debug"
@@ -29,7 +30,7 @@
 #define MARCADO \
 0,0,0,0,1,0,1,1,0,0
 
-#define PERENNE \
+#define NOPERENNE \
 0,0,0,0,0,0,0,0,0,0
 
 #define INCIDENCIA \
@@ -63,7 +64,6 @@
 // CONFIGURACION RFID
 #define RFID_TX_PORT
 #define RFID_RX_PORT
-#define RFID_TOPIC topic/rfid
 
 // CONFIGURACION CERRADURA
 #define CERRADURA_GPIO 4

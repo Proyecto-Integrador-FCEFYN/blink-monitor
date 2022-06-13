@@ -17,26 +17,32 @@
 #include "cerradura_device.h"
 #include "cam.h"
 
-typedef int (*action_p)(void *self);
+typedef void (*action_p)(void *self);
+typedef void *objeto_t;
 
-typedef struct seqdisparo
+typedef struct segmento
 {
-    int *transiciones;
+    int *secuencia;
+    unsigned int segmento_size;
     action_p *actions;
-    unsigned int size;
     monitor_t *monitor;
-} seqdisparo_t;
+    objeto_t *objetos;
+} segmento_t;
 
 
 typedef struct software
 {
-    seqdisparo_t *seqdisparos;
+    segmento_t *segmentos;
     pthread_t *threads;
     // Manejador de errores para los errores dentro de las secuencias.
 } software_t;
 
-void software_init(software_t *self, seqdisparo_t *seqs);
+void software_init(software_t *self, segmento_t *segmentos);
 
-int seqdisparo_init(seqdisparo_t *self, unsigned int size, int *transiciones, void *actions);
+int segmento_init(segmento_t *self,
+                  int *secuencia_transiciones,
+                  void *actions,
+                  objeto_t *objetos,
+                  unsigned int segmento_size);
 
 #endif //BLINK_SOFTWARE_H

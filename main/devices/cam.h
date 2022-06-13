@@ -7,7 +7,6 @@
 
 #include <esp_camera.h>
 #include <monitor.h>
-#include "device.h"
 
 #define BOARD_ESP32CAM_AITHINKER
 
@@ -36,7 +35,7 @@ typedef struct
    camera_fb_t *pic;
 } dev_camera_t;
 
-void camera_device_init(device_t *self);
+void camera_device_init(dev_camera_t *self);
 
 void camera_sacarfoto(dev_camera_t *self);
 

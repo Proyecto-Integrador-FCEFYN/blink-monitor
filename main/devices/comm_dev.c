@@ -6,13 +6,15 @@
 #include <esp_log.h>
 #include "comm_dev.h"
 #include "macros.h"
-#include "device.h"
 #include "cam.h"
 
 static const char *TAG = "COMM";
 
-void comm_device_init(device_t *self)
+void comm_device_init(dev_comm_t *self, dev_camera_t *cam_device, rfid_handler_t *rfid_device )
 {
+    self->cam_device = cam_device;
+    self->rfid_device = rfid_device;
+
     esp_mqtt_client_config_t mqtt_cfg = {
             .host = MY_MQTT_HOST,
             .port = MY_MQTT_PORT,
@@ -20,12 +22,12 @@ void comm_device_init(device_t *self)
 //            .password = MY_MQTT_PASS,
     };
 
-    dev_comm_t  *this_comm_device = self->context;
-    if ( (*this_comm_device->client = esp_mqtt_client_init(&mqtt_cfg)) )
+//    dev_comm_t  self = self->context;
+    if ( (*self->client = esp_mqtt_client_init(&mqtt_cfg)) )
     {
         ESP_LOGE(TAG, "Error en la inicializacion del cliente MQTT");
     }
-    ESP_ERROR_CHECK(esp_mqtt_client_start(*this_comm_device->client));
+    ESP_ERROR_CHECK(esp_mqtt_client_start(*self->client));
 }
 
 static int send_msg(dev_comm_t *self, char *data, char *topic)
@@ -37,37 +39,45 @@ static int send_msg(dev_comm_t *self, char *data, char *topic)
                                              0,
                                              0) );
     return 0;
+
+
 }
 
-void comm_enviarfoto(device_t *self, device_t *cam_device)
+void comm_enviarfoto(dev_comm_t *self)
 {
-    dev_comm_t  *this_comm_device = self->context;
-    dev_camera_t *this_camera_device = cam_device->context;
 
-    esp_mqtt_client_publish(*this_comm_device->client,
+    esp_mqtt_client_publish(*self->client,
                             HOST"/"CAMARA_TOPIC,
-                            (char*) this_camera_device->pic->buf,
-                            (int) this_camera_device->pic->len,
+                            (char*) self->cam_device->pic->buf,
+                            (int) self->cam_device->pic->len,
                             0,
                             0);
 }
-void comm_rechazaringreso(device_t *self)
+void comm_rechazaringreso(dev_comm_t *self)
 {
-    dev_comm_t *this_comm_device = self->context;
-    send_msg(this_comm_device,"Se rechazo ingreso",HOST"/"PUERTA_TOPIC);
-}
-void comm_comunicartimeout(device_t *self)
-{
-    dev_comm_t *this_comm_device = self->context;
-    send_msg(this_comm_device,"Timeout en cerradura",HOST"/"PUERTA_TOPIC);
+    send_msg(self,"Se rechazo ingreso",HOST"/"PUERTA_TOPIC);
 }
 
-void comm_debug_msg(dev_comm_t *self, char *data)
+void comm_enviarcodigo(dev_comm_t *self)
+{
+    send_msg(self,self->rfid_device->buffer,HOST"/"RFID_TOPIC);
+}
+
+void comm_aceptaringreso(dev_comm_t *self)
+{
+    send_msg(self,"Se acepto ingreso",HOST"/"PUERTA_TOPIC);
+}
+void comm_comunicartimeout(dev_comm_t *self)
+{
+    send_msg(self,"Timeout en cerradura",HOST"/"PUERTA_TOPIC);
+}
+
+void comm_debug_msg(dev_comm_t *self)
 {
     ESP_ERROR_CHECK( esp_mqtt_client_publish(*self->client,
                                              HOST"/"DEBUG_TOPIC,
-                                             data,
-                                             strlen(data),
-                                             0,
-                                             0) );
+            self->debug_msj,
+            strlen(self->debug_msj),
+            0,
+            0) );
 }

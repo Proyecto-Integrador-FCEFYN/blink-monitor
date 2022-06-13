@@ -14,74 +14,21 @@
 #include "freertos/task.h"
 #include "monitor.h"
 #include "procesador_petri.h"
-#include "devices/device.h"
 #include "software/software.h"
-#include "devices/comm_dev.h"
-#include "devices/cerradura_device.h"
+//Handlers
+#include "mqtt_handler.h"
+#include "rfid_handler.h"
+#include "boton_handler.h"
+//Devices
+#include "cam.h"
+#include "comm_dev.h"
+#include "cerradura_device.h"
+
+
 
 #define _REENTRANT
 #define _POSIX_PRIORITY_SCHEDULING
 
-void app_main(void) {
-    monitor_t monitor;
-    procesador_petri_t petri;
-    procesador_de_petri_init(&petri);
-    monitor_init(&monitor, &petri);
-
-    //ACA EL ORDEN IMPORTA POR COMO SE ACOMODA EL HEAP.
-    //DEBE SER EL PRIMER DISPOSITIVO EN INICIAR!
-
-    //TODO: ARMAR INICIALIZACION DE DISPOSITIVOS
-    //TODO: ARMAR INICIALIZACION DE HANDLERS
-    //TODO: ARMAR INICIALIZACION DE SOFTWARE
-    //TODO: ARMAR INICIALIZACION DE SECUENCIAS DE DISPAROS
-
-
-//    device_t mqtt_device;
-//    device_init(&mqtt_device, &monitor, D_COMM);
-//    device_t cam_device;
-//    device_init(&cam_device, &monitor, CAMARA);
-//    device_t boton_device;
-//    device_init(&boton_device, &monitor, BOTON);
-//    device_t cerradura_device;
-//    device_init(&cerradura_device, &monitor, PUERTA);
-//    device_t rfid_device;
-//    device_init(&rfid_device, &monitor, RFID);
-
-    // ENABLE
-//    device_enable(&cam_device);
-//    device_enable(&mqtt_device);
-//    device_enable(&boton_device);
-//    device_enable(&cerradura_device);
-//    device_enable(&rfid_device);
-
-    // SOFTWARE
-    seqdisparo_t seq1,seq2;
-    int seq1_transiciones[3] = {8, 9, 10};
-    void *seq1_actions[3] = {
-            &comm_enviarfoto, //P9
-            &comm_rechazaringreso, // P10
-            &comm_comunicartimeout, // P11
-    };
-    seqdisparo_init(&seq1, 4, seq1_transiciones, seq1_actions);
-
-    int seq2_transiciones[2] = {5, 6};
-    void *seq2_actions[2] = {
-            &comm_enviarfoto,
-            &comm_rechazaringreso,
-    };
-    seqdisparo_init(&seq2, 4, seq2_transiciones, seq2_actions);
-    seqdisparo_t seqs[2] = {seq1,seq2};
-
-    software_t software;
-    software_init(&software, seqs);
-
-//  Muy importante que esta función no muera.
-    while (1)
-    {
-        vTaskDelay(10);
-    }
-}
 
 void init_communications()
 {
@@ -107,5 +54,80 @@ void init_communications()
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+}
+
+void app_main(void) {
+    init_communications();
+    monitor_t monitor;
+    procesador_petri_t petri;
+    procesador_de_petri_init(&petri);
+    monitor_init(&monitor, &petri);
+
+
+    //Init handlers
+    boton_handler_t boton_handler;
+    boton_handler_init(&boton_handler, &monitor);
+    rfid_handler_t rfid_handler;
+    rfid_handler_init(&rfid_handler, &monitor);
+    mqtt_handler_t mqtt_handler;
+    mqtt_handler_init(&mqtt_handler, &monitor);
+
+    // Init devices
+    dev_camera_t cam_device;
+    camera_device_init(&cam_device);
+    dev_cerradura_t cerradura_dev;
+    cerradura_device_init(&cerradura_dev,2);
+    dev_comm_t comm_device;
+    comm_device_init(&comm_device,&cam_device,&rfid_handler);
+
+    // SOFTWARE
+    segmento_t segmentos[3];
+
+    int seq0[] = {8, 9};
+    action_p actions0[] = {
+            (action_p)camera_sacarfoto, // P8
+            (action_p)comm_enviarfoto   // P5
+    };
+    objeto_t objetos0[] = {
+            (objeto_t)&cam_device,
+            (objeto_t)&comm_device
+    };
+    segmento_init(&segmentos[0], seq0, actions0, objetos0, 2);
+
+    int seq1[] = {3, 4};
+    action_p action1[] = {
+            (action_p)cerradura_abrirpuerta, // P2
+            NULL
+    };
+    objeto_t objetos1[] = {
+            (objeto_t)&cerradura_dev,
+            NULL
+    };
+    segmento_init(&segmentos[1], seq1, action1, objetos1, 2);
+
+    int seq2[] = {1};
+    action_p actions2[] = {
+            (action_p) comm_enviarcodigo
+    };
+    objeto_t objetos2[] = {
+            (objeto_t)&cam_device,
+            (objeto_t)&comm_device
+    };
+    segmento_init(&segmentos[2], seq2, actions2, objetos2, 1);
+
+    software_t software;
+    software_init(&software, segmentos);
+
+    // ENABLE
+    rfid_handler.enabled = 1;
+    boton_handler.enabled = 1;
+    mqtt_handler.enabled = 1;
+
+
+//  Muy importante que esta función no muera.
+    while (1)
+    {
+        vTaskDelay(10);
+    }
 }
 

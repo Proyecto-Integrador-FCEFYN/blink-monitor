@@ -6,11 +6,12 @@
 
 #include <sys/cdefs.h>
 #include "driver/gpio.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <esp_timer.h>
 #include <esp_log.h>
 #include "freertos/FreeRTOS.h"
 #include <freertos/task.h>
+#include <string.h>
 #include "macros.h"
 
 //#define GPIO_INPUT_IO_0     2  // TODO: ELEGIR PIN PARA BOTON
@@ -28,8 +29,7 @@ static const char *TAG = "BOTON_HANDLER";
 _Noreturn void* boton_handler_task(void* arg)
 {
 
-    handler_t *self = arg;
-
+    boton_handler_t *self = arg;
     // Variables will change:
     uint64_t lastSteadyState = LOW;       // the previous steady state from the input pin
     uint64_t lastFlickerableState = LOW;  // the previous flickerable state from the input pin
@@ -68,13 +68,17 @@ _Noreturn void* boton_handler_task(void* arg)
                 // if the button state has changed:
                 if(lastSteadyState == HIGH && currentState == LOW)
                 {
-                    ESP_LOGI(TAG, "The button is pressed");
                     self->monitor->disparar(self->monitor, T_EVENTO_BOTON);
-                    self->buffer_size = 1;
-                    self->buffer = "ON";
+                    char *msj = "ON";
+                    self->buffer_size = strlen(msj);
+                    self->buffer = msj;
+                    ESP_LOGI(TAG, "The button is pressed");
                 }
                 else if(lastSteadyState == LOW && currentState == HIGH)
                 {
+                    char *msj = "OFF";
+                    self->buffer_size = strlen(msj);
+                    self->buffer = msj;
                     ESP_LOGI(TAG, "The button is released");
                 }
 
@@ -86,7 +90,7 @@ _Noreturn void* boton_handler_task(void* arg)
     } //while
 }// task
 
-void boton_handler_init(handler_t *h)
+void boton_handler_init(boton_handler_t *self, monitor_t *m)
 {
 
     gpio_config_t io_conf2 = {}; //zero-initialize the config structure.
@@ -98,4 +102,18 @@ void boton_handler_init(handler_t *h)
     io_conf2.pull_up_en = 1; //enable pull-up mode
     io_conf2.pull_down_en = 0; //disable pull-down mode
     gpio_config(&io_conf2);
+
+    self->monitor = m;
+    self->enabled = 0;
+    self->buffer = "";
+    self->buffer_size = 0;
+
+     // Atributos del thread.
+    pthread_attr_t attr;
+    attr.contentionscope = PTHREAD_SCOPE_SYSTEM;
+    attr.schedpolicy = SCHED_RR;
+    pthread_attr_init(&attr);
+    //Creacion de thread
+    pthread_t t;
+    pthread_create(&t, &attr, boton_handler_task, (void *) self);
 }

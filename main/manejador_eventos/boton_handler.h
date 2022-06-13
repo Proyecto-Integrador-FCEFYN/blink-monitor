@@ -4,10 +4,16 @@
 #ifndef CLASE_GPIO_HANDLER_H
 #define CLASE_GPIO_HANDLER_H
 
-#include <sys/cdefs.h>
-#include "handler.h"
+#include "monitor.h"
 
-void boton_handler_init(handler_t *h);
+typedef struct {
+    monitor_t *monitor;
+    char *buffer;
+    unsigned int buffer_size;
+    int enabled;
+} boton_handler_t;
+
+void boton_handler_init(boton_handler_t *h, monitor_t *m);
 
 _Noreturn void* boton_handler_task(void* arg);
 

@@ -6,9 +6,18 @@
 #ifndef BLINK_RFID_HANDLER_H
 #define BLINK_RFID_HANDLER_H
 
-#include "handler.h"
+#include "monitor.h"
 
-void rfid_handler_init(handler_t *h);
+typedef struct {
+    monitor_t *monitor;
+    char *buffer;
+    unsigned int buffer_size;
+    int enabled;
+} rfid_handler_t;
+
+void rfid_handler_init(rfid_handler_t *h, monitor_t *m);
+
+//void guardar_rfid(handler_t *self);
 
 _Noreturn void* rfid_handler_task(void* arg);
 

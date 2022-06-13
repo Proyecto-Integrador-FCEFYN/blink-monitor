@@ -13,10 +13,10 @@
 
 static const char *TAG = "RFID";
 static const uart_port_t uart_num = UART_NUM_2;
+static char RFIDcurrentState[14];
 
-void rfid_handler_init(handler_t *h)
+void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
 {
-    h->buffer_size = 14;
 
     /* Configure the IOMUX register for pad BLINK_GPIO (some pads are
       muxed to GPIO on reset already, but some default to other
@@ -48,14 +48,27 @@ void rfid_handler_init(handler_t *h)
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM_2, uart_buffer_size, \
                                         uart_buffer_size, 10, &uart_queue, 0));
 
+    self->monitor = monitor;
+    self->enabled = 0;
+    self->buffer = "Not_init";
+    self->buffer_size = 14;
+
+    // Atributos del thread.
+    pthread_attr_t attr;
+    attr.contentionscope = PTHREAD_SCOPE_SYSTEM;
+    attr.schedpolicy = SCHED_RR;
+    pthread_attr_init(&attr);
+    //Creacion de thread
+    pthread_t t;
+    pthread_create(&t, &attr, rfid_handler_task, (void *) self);
 }
 
 _Noreturn void* rfid_handler_task(void* arg)
 {
-    handler_t *self = arg;
-    char RFIDcurrentState[14];
+    rfid_handler_t *self = arg;
+//    char RFIDcurrentState[14];
 
-     // Variables will change:
+    // Variables will change:
     static char lastSteadyState[14] = {0};       // the previous steady state from the input pin
     static char lastFlickerableState[14] = {0};  // the previous flickerable state from the input pin
 
@@ -64,7 +77,7 @@ _Noreturn void* rfid_handler_task(void* arg)
     uint64_t lastDebounceTime = 0;  // the last time the output pin was toggled
 
     while(1)
-     {
+    {
         if(self->enabled)
         {
             // read the state of the switch/button:
@@ -96,7 +109,7 @@ _Noreturn void* rfid_handler_task(void* arg)
                     self->monitor->disparar(self->monitor, T_EVENTO_RFID);
                     self->buffer_size = 14;
                     strncpy(self->buffer, RFIDcurrentState,14);
-                    ESP_LOGI(TAG, "NEW VALUE READ!");
+                    ESP_LOGI(TAG, "Llego nuevo codigo RFID");
                 }
 //                else if (strncmp(lastSteadyState, RFIDcurrentState, 14) == 0)
 //                else if(lastSteadyState == LOW && RFIDcurrentState == HIGH)

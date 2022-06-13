@@ -10,10 +10,8 @@
 #include <esp_system.h>
 #include <nvs_flash.h>
 #include <sys/param.h>
-//#include <string.h>
 
 #include "esp_camera.h"
-#include "device.h"
 
 static const char *TAG = "CAMARA";
 
@@ -24,7 +22,7 @@ void camera_sacarfoto(dev_camera_t *self)
     ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", self->pic->len);
 }
 
-void camera_device_init(device_t *self)
+void camera_device_init(dev_camera_t *self)
 {
     static camera_config_t camera_config = {
             .pin_pwdn = CAM_PIN_PWDN,
@@ -64,8 +62,7 @@ void camera_device_init(device_t *self)
     {
         ESP_LOGE(TAG, "Camera Init Failed");
     }
-    dev_camera_t *this_camera_dev = self->context;
-    this_camera_dev->pic = esp_camera_fb_get();
+    self->pic = esp_camera_fb_get();
 }
 
 

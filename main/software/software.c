@@ -8,40 +8,51 @@
 static const char *TAG = "SOFTWARE";
 
 
-int seqdisparo_init(seqdisparo_t *self, unsigned int size, int *transiciones, void *actions)
+int segmento_init(segmento_t *self,
+                  int *secuencia_transiciones,
+                  void *actions,
+                  objeto_t *objetos,
+                  unsigned int segmento_size)
 {
-    self->size = size;
-    self->transiciones = transiciones;
+    self->secuencia = secuencia_transiciones;
     self->actions = actions;
-    if (self->transiciones == NULL || self->actions == NULL)
+    self->objetos = objetos;
+    self->segmento_size = segmento_size;
+    if (self->secuencia == NULL ||
+        self->actions == NULL ||
+        self->objetos == NULL)
     {
-        ESP_LOGE(TAG, "Error en el malloc de secuencia de disparo");
+        ESP_LOGE(TAG, "Error en el init de segmento");
         return -1;
     }
-
-
-   return 0;
+    return 0;
 }
 
 
 
-_Noreturn void *seqdisparo_run(void *arg)
+_Noreturn void *segmento_run(void *arg)
 {
-    seqdisparo_t *self = arg;
+    segmento_t *self = arg;
     while (1)
     {
-        for (int i = 0; i < self->size; ++i)
+        for (int i = 0; i < self->segmento_size; ++i)
         {
-            self->actions[i](self);
-            self->monitor->disparar(self->monitor,i);
+            if(self->secuencia[i] != NULL_TRANSITION)
+            {
+                self->monitor->disparar(self->monitor,i);
+            }
+            if (self->actions[i] != NULL || self->objetos[i] != NULL)
+            {
+                self->actions[i](&self->objetos[i]);
+            }
         }
     }
 }
 
-void software_init(software_t *self, seqdisparo_t *seqs)
+void software_init(software_t *self, segmento_t *segmentos)
 {
     self->threads = malloc(HILOS * sizeof(pthread_t));
-    self->seqdisparos = malloc(HILOS * sizeof(seqdisparo_t));
+    self->segmentos = malloc(HILOS * sizeof(segmento_t));
 
     pthread_attr_t attr;
     attr.contentionscope = PTHREAD_SCOPE_SYSTEM;
@@ -50,11 +61,11 @@ void software_init(software_t *self, seqdisparo_t *seqs)
 
     for (int i = 0; i < HILOS; ++i)
     {
-        self->seqdisparos = seqs;
+        self->segmentos = segmentos;
         pthread_create(&self->threads[i],
                        &attr,
-                       seqdisparo_run,
-                       (void*) &self->seqdisparos[i]);
+                       segmento_run,
+                       (void *) &self->segmentos[i]);
     }
 }
 
