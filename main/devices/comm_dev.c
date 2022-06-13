@@ -20,19 +20,20 @@ void comm_device_init(dev_comm_t *self, dev_camera_t *cam_device, rfid_handler_t
             .port = MY_MQTT_PORT,
 //            .username = MY_MQTT_USER,
 //            .password = MY_MQTT_PASS,
+            .user_context = self
     };
 
 //    dev_comm_t  self = self->context;
-    if ( (*self->client = esp_mqtt_client_init(&mqtt_cfg)) )
-    {
-        ESP_LOGE(TAG, "Error en la inicializacion del cliente MQTT");
-    }
-    ESP_ERROR_CHECK(esp_mqtt_client_start(*self->client));
+//    *self->client = esp_mqtt_client_init(&mqtt_cfg);
+    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+
+    ESP_ERROR_CHECK(esp_mqtt_client_start(client));
+    self->client = client;
 }
 
 static int send_msg(dev_comm_t *self, char *data, char *topic)
 {
-    ESP_ERROR_CHECK( esp_mqtt_client_publish(*self->client,
+    ESP_ERROR_CHECK( esp_mqtt_client_publish(self->client,
                                              topic,
                                              data,
                                              strlen(data),
@@ -46,7 +47,7 @@ static int send_msg(dev_comm_t *self, char *data, char *topic)
 void comm_enviarfoto(dev_comm_t *self)
 {
 
-    esp_mqtt_client_publish(*self->client,
+    esp_mqtt_client_publish(self->client,
                             HOST"/"CAMARA_TOPIC,
                             (char*) self->cam_device->pic->buf,
                             (int) self->cam_device->pic->len,
@@ -74,7 +75,7 @@ void comm_comunicartimeout(dev_comm_t *self)
 
 void comm_debug_msg(dev_comm_t *self)
 {
-    ESP_ERROR_CHECK( esp_mqtt_client_publish(*self->client,
+    ESP_ERROR_CHECK( esp_mqtt_client_publish(self->client,
                                              HOST"/"DEBUG_TOPIC,
             self->debug_msj,
             strlen(self->debug_msj),

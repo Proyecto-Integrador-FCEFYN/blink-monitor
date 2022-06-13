@@ -33,6 +33,10 @@
 void init_communications()
 {
     static const char *TAG = "INIT_COMMUNICATIONS";
+
+    ESP_ERROR_CHECK(nvs_flash_init());
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
     /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
     * Read "Establishing Wi-Fi or Ethernet Connection" section in
     * examples/protocols/README.md for more information about this function.
@@ -50,10 +54,6 @@ void init_communications()
     esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
 }
 
 void app_main(void) {
@@ -121,7 +121,7 @@ void app_main(void) {
     // ENABLE
     rfid_handler.enabled = 1;
     boton_handler.enabled = 1;
-    mqtt_handler.enabled = 1;
+//    mqtt_handler.enabled = 1;
 
 
 //  Muy importante que esta función no muera.
