@@ -77,7 +77,7 @@ void app_main(void) {
     dev_camera_t cam_device;
     camera_device_init(&cam_device);
     dev_cerradura_t cerradura_dev;
-    cerradura_device_init(&cerradura_dev,2);
+    cerradura_device_init(&cerradura_dev,5);
     dev_comm_t comm_device;
     comm_device_init(&comm_device, &client, &cam_device, &rfid_handler);
 
