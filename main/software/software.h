@@ -40,6 +40,7 @@ typedef struct software
 void software_init(software_t *self, segmento_t *segmentos);
 
 int segmento_init(segmento_t *self,
+                  monitor_t *monitor,
                   int *secuencia_transiciones,
                   void *actions,
                   objeto_t *objetos,
