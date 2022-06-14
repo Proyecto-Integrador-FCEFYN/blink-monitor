@@ -57,7 +57,7 @@ void procesador_de_petri_init(procesador_petri_t *petri)
     long int perennes[TRANSICIONES] = {NOPERENNE};
     for (int i =0; i<TRANSICIONES; i++)
     {
-        petri->matriz_perennes[i] = perennes[i];
+        petri->matriz_noperennes[i] = perennes[i];
     }
     long int incidencia[PLAZAS][TRANSICIONES] = {INCIDENCIA};
     for (int i = 0; i < PLAZAS; ++i) 
