@@ -4,7 +4,14 @@
 
 static const char* TAG = "Monitor";
 
-
+static void print_marcado(procesador_petri_t *petri)
+{
+    for (int i = 0; i < PLAZAS; ++i) {
+        printf("%li",petri->matriz_estado[i]);
+        printf(",");
+    }
+    printf("\r\n");
+}
 
 void monitor_disparar2(monitor_t *monitor, int disparo)
 {
@@ -17,14 +24,14 @@ void monitor_disparar2(monitor_t *monitor, int disparo)
 #if DEBUG
         ESP_LOGW(TAG, "No Sensibilizada: %i -- espera\n", disparo);
 #endif
-        if(monitor->petri->matriz_perennes[disparo])
+//        if(monitor->petri->matriz_noperennes[disparo])
+//        {
+//            ESP_LOGW(TAG, "No Sensibilizada No Perenne: %i -- salgo\n", disparo);
+//            return;
+//        }
+//        else
         {
             pthread_cond_wait(&monitor->condition[disparo], &monitor->entrada);
-        }
-        else
-        {
-            ESP_LOGW(TAG, "No Sensibilizada No Perenne: %i -- salgo\n", disparo);
-            return;
         }
         k = monitor->petri->solicitud_disparo(monitor->petri, disparo);
     }
@@ -32,8 +39,9 @@ void monitor_disparar2(monitor_t *monitor, int disparo)
 
 #if DEBUG
     ESP_LOGW(TAG, "Si sensibilizada: %i -- disparo\n",disparo);
+    print_marcado(monitor->petri);
     // printf("Si sensibilizada: %i -- disparo\n",disparo);
-    // monitor->petri->toString(monitor->petri);
+//     monitor->petri->toString(monitor->petri);
 #endif
     for (int i = 0; i < TRANSICIONES; ++i)
     {

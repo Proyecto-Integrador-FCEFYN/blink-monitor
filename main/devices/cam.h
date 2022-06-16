@@ -35,6 +35,8 @@ typedef struct
    camera_fb_t *pic;
 } dev_camera_t;
 
+camera_fb_t *pic0;
+
 void camera_device_init(dev_camera_t *self);
 
 void camera_sacarfoto(dev_camera_t *self);

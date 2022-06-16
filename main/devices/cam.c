@@ -17,10 +17,13 @@ static const char *TAG = "CAMARA";
 
 void camera_sacarfoto(dev_camera_t *self)
 {
-    self->pic = esp_camera_fb_get();
+//    esp_camera_fb_return(self->pic);
+    esp_camera_fb_return(pic0);
+
     sleep(1);
-    ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", self->pic->len);
-    esp_camera_fb_return(self->pic);
+//    self->pic = esp_camera_fb_get();
+    pic0 = esp_camera_fb_get();
+    ESP_LOGI(TAG, "Picture taken! Its size was: %i bytes", pic0->len);
 }
 
 void camera_device_init(dev_camera_t *self)

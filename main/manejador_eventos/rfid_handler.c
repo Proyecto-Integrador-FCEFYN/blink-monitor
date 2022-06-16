@@ -13,7 +13,7 @@
 
 static const char *TAG = "RFID";
 static const uart_port_t uart_num = UART_NUM_2;
-static char RFIDcurrentState[14];
+
 
 void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
 {
@@ -78,7 +78,7 @@ _Noreturn void* rfid_handler_task(void* arg)
 
     while(1)
     {
-        if(self->enabled)
+//        if(self->enabled)
         {
             // read the state of the switch/button:
             uart_read_bytes(uart_num, RFIDcurrentState, 14, 100); //14 es el largo del codigo
@@ -107,8 +107,8 @@ _Noreturn void* rfid_handler_task(void* arg)
 //                if(lastSteadyState == HIGH && RFIDcurrentState == LOW)
                 {
                     self->monitor->disparar(self->monitor, T_EVENTO_RFID);
-                    self->buffer_size = 14;
-                    strncpy(self->buffer, RFIDcurrentState,14);
+//                    self->buffer_size = 14;
+//                    strncpy(self->buffer, RFIDcurrentState,14);
                     ESP_LOGI(TAG, "Llego nuevo codigo RFID");
                 }
 //                else if (strncmp(lastSteadyState, RFIDcurrentState, 14) == 0)

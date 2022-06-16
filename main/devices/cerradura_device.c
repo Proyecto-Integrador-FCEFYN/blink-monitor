@@ -18,7 +18,7 @@ void cerradura_abrirpuerta(dev_cerradura_t *self)
     gpio_set_level(CERRADURA_GPIO, 1);
     ESP_LOGI(TAG,"PUERTA ABIERTA!");
     self->estado = gpio_get_level(CERRADURA_GPIO);
-    sleep(self->duracion_apertura);
+    sleep(CERRADURA_ABIERTA);
     gpio_set_level(CERRADURA_GPIO, 0);
     ESP_LOGI(TAG,"PUERTA CERRADA!");
     self->estado = gpio_get_level(CERRADURA_GPIO);

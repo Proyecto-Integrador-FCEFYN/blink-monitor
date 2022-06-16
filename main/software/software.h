@@ -18,7 +18,7 @@
 #include "cam.h"
 
 typedef void (*action_p)(void *self);
-typedef void *objeto_t;
+typedef void* objeto_t;
 
 typedef struct segmento
 {

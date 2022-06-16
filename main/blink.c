@@ -15,6 +15,7 @@
 #include "monitor.h"
 #include "procesador_petri.h"
 #include "software/software.h"
+#include "mqtt_client.h"
 //Handlers
 #include "mqtt_handler.h"
 #include "rfid_handler.h"
@@ -54,6 +55,8 @@ void init_communications()
     esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
+    esp_log_level_set("esp32_asio_pthread", ESP_LOG_VERBOSE);
+    esp_log_level_set("*", ESP_LOG_VERBOSE);
 }
 
 void app_main(void) {
@@ -93,7 +96,13 @@ void app_main(void) {
             (objeto_t)&cam_device,
             (objeto_t)&comm_device
     };
-    segmento_init(&segmentos[0], seq0, actions0, objetos0, 2);
+
+    segmento_init(&segmentos[0],
+                  &monitor,
+                  seq0,
+                  actions0,
+                  objetos0,
+                  2);
 
     int seq1[] = {3, 4};
     action_p action1[] = {
@@ -104,26 +113,34 @@ void app_main(void) {
             (objeto_t)&cerradura_dev,
             NULL
     };
-    segmento_init(&segmentos[1], seq1, action1, objetos1, 2);
+    segmento_init(&segmentos[1],
+                  &monitor,
+                  seq1,
+                  action1,
+                  objetos1,
+                  2);
 
     int seq2[] = {1};
     action_p actions2[] = {
             (action_p) comm_enviarcodigo
     };
     objeto_t objetos2[] = {
-            (objeto_t)&cam_device,
-            (objeto_t)&comm_device
+            (objeto_t)&comm_device,
     };
-    segmento_init(&segmentos[2], seq2, actions2, objetos2, 1);
-
-    software_t software;
-    software_init(&software, segmentos);
+    segmento_init(&segmentos[2],
+                  &monitor,
+                  seq2,
+                  actions2,
+                  objetos2,
+                  1);
 
     // ENABLE
     rfid_handler.enabled = 1;
     boton_handler.enabled = 1;
-//    mqtt_handler.enabled = 1;
+    mqtt_handler.enabled = 1;
 
+    software_t software;
+    software_init(&software, segmentos);
 
 //  Muy importante que esta función no muera.
     while (1)

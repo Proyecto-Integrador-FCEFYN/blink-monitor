@@ -45,7 +45,7 @@ _Noreturn void *segmento_run(void *arg)
             }
             if (self->actions[i] != NULL || self->objetos[i] != NULL)
             {
-                self->actions[i](&self->objetos[i]);
+                self->actions[i](self->objetos[i]);
             }
         }
         vTaskDelay(10);

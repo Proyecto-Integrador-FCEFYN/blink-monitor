@@ -10,7 +10,7 @@
 
 typedef struct
 {
-    esp_mqtt_client_handle_t client;
+    esp_mqtt_client_handle_t *client;
     dev_camera_t *cam_device;
     rfid_handler_t *rfid_device;
     char *debug_msj;

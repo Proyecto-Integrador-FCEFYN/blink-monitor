@@ -21,7 +21,7 @@ static void log_error_if_nonzero(const char * message, int error_code)
 esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
     mqtt_handler_t *handler = event->user_context;
-    if(handler->enabled)
+//    if(handler->enabled)
     {
 
         esp_mqtt_client_handle_t client = event->client;
@@ -30,6 +30,8 @@ esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             case MQTT_EVENT_CONNECTED:
                 ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
                 msg_id = esp_mqtt_client_subscribe(client, "topic/confirm", 0);
+                ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+                msg_id = esp_mqtt_client_subscribe(client, HOST"/"CONFIRM_TOPIC, 0);
                 ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
                 break;
 
@@ -57,7 +59,7 @@ esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 
                 if (strncmp(HOST"/"CONFIRM_TOPIC, event->topic, event->topic_len ) == 0 )
                 {
-                    if (strncmp("denegado_boton", event->data, event->data_len)== 0)
+                    if (strncmp("", event->data, event->data_len)== 0)
                     {
                         handler->monitor->disparar(handler->monitor, T_DENEGADO_BOTON);
                         ESP_LOGI(TAG,"EL SISTEMA HA DENEGADO EL ACCESO POR BOTON");
@@ -111,19 +113,23 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 void mqtt_handler_init(mqtt_handler_t *self, esp_mqtt_client_handle_t *cliente, monitor_t *monitor)
 {
+    esp_mqtt_client_handle_t cliente2;
+
     esp_mqtt_client_config_t mqtt_cfg = {
             .host = MY_MQTT_HOST,
             .port = MY_MQTT_PORT,
 //            .username = MY_MQTT_USER,
 //            .password = MY_MQTT_PASS,
-            .user_context = self
+            .user_context = self,
+            .client_id = "MQTT_HANDLER"
     };
-    *cliente = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_register_event(*cliente,
+    cliente2 = esp_mqtt_client_init(&mqtt_cfg);
+    esp_mqtt_client_register_event(cliente2,
                                    ESP_EVENT_ANY_ID,
                                    mqtt_event_handler,
                                    NULL);
-    esp_mqtt_client_start(*cliente);
+    esp_mqtt_client_subscribe(cliente2,HOST"/"CONFIRM_TOPIC,0);
+    esp_mqtt_client_start(cliente2);
 
     self->monitor = monitor;
     self->enabled = 0;
