@@ -10,12 +10,14 @@
 #include <esp_log.h>
 #include <nvs_flash.h>
 #include <esp_event.h>
+#include <http_server.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "monitor.h"
 #include "procesador_petri.h"
 #include "software/software.h"
 #include "mqtt_client.h"
+#include "streaming/streaming.h"
 //Handlers
 #include "mqtt_handler.h"
 #include "rfid_handler.h"
@@ -142,10 +144,28 @@ void app_main(void) {
     software_t software;
     software_init(&software, segmentos);
 
+
+    // *************************** //
+    //       Video Streaming       //
+    // *************************** //
+
+    static httpd_handle_t server = NULL;
+    ESP_ERROR_CHECK(esp_event_handler_register(
+            IP_EVENT,
+            IP_EVENT_STA_GOT_IP,
+            &connect_handler,
+            &server));
+    ESP_ERROR_CHECK(esp_event_handler_register(
+            WIFI_EVENT,
+            WIFI_EVENT_STA_DISCONNECTED,
+            &disconnect_handler,
+            &server));
+    server = start_webserver();
+
 //  Muy importante que esta función no muera.
     while (1)
     {
-        vTaskDelay(10);
+        vTaskDelay(100);
     }
 }
 
