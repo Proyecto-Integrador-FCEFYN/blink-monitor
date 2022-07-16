@@ -42,7 +42,38 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
         return res;
     }
 
-    while(true){
+    size_t query_str_buffer_len = httpd_req_get_url_query_len(req);
+//    char *query_str_buffer = malloc(query_str_buffer_len * sizeof(char) +1);
+    char query_str_buffer[1024] = {0};
+
+    res = httpd_req_get_url_query_str(req, query_str_buffer, 1026);
+    if(res != ESP_OK){
+        ESP_LOGE(TAG, "Error en obtener el query string! Error: %i, largo %i", res, query_str_buffer_len);
+        return res;
+    }
+
+    char key[] = "duracion";
+    char value[64];
+    memset(value,0, strlen(value));
+
+    res = httpd_query_key_value(query_str_buffer, key, value, 64);
+    if(res != ESP_OK){
+        ESP_LOGE(TAG, "Error en obtener el valor desde el query string!");
+        return res;
+    }
+//    free(query_str_buffer);
+
+    int64_t duracion = strtol(value, NULL, 10);
+    if(duracion <= 0 ){
+        ESP_LOGE(TAG, "Error en conversion de parametro de query string!");
+        return res;
+    }
+
+    // duracion pasa a ser el timestamp + microsegs del parametro
+    duracion = esp_timer_get_time() + duracion * 1000000;
+
+    // mientras el tiempo actual sea menor que el parametro
+    while(esp_timer_get_time() < duracion){
         fb = esp_camera_fb_get();
         if (!fb) {
             ESP_LOGE(TAG, "Camera capture failed");
@@ -325,7 +356,7 @@ void stop_webserver(httpd_handle_t server)
 }
 
 void disconnect_handler(void* arg, esp_event_base_t event_base,
-                               int32_t event_id, void* event_data)
+                        int32_t event_id, void* event_data)
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
@@ -336,7 +367,7 @@ void disconnect_handler(void* arg, esp_event_base_t event_base,
 }
 
 void connect_handler(void* arg, esp_event_base_t event_base,
-                            int32_t event_id, void* event_data)
+                     int32_t event_id, void* event_data)
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {

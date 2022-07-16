@@ -10,7 +10,7 @@
 #include <esp_log.h>
 #include <nvs_flash.h>
 #include <esp_event.h>
-#include <http_server.h>
+#include <esp_http_server.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "monitor.h"
