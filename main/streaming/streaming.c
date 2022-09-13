@@ -17,6 +17,7 @@
 #include "esp_camera.h"
 #include "streaming.h"
 #include "esp_timer.h"
+#include "macros.h"
 #include <esp_http_server.h>
 
 #define PART_BOUNDARY "123456789000000000000987654321"
@@ -41,6 +42,21 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     }
     j->len += len;
     return len;
+}
+
+esp_err_t cerradura_handler(httpd_req_t *req)
+{
+    esp_err_t res = ESP_OK;
+
+    gpio_set_level(CERRADURA_GPIO, 1);
+    ESP_LOGI(TAG,"PUERTA ABIERTA!");
+//    estado = gpio_get_level(CERRADURA_GPIO);
+    sleep(CERRADURA_ABIERTA);
+    gpio_set_level(CERRADURA_GPIO, 0);
+    ESP_LOGI(TAG,"PUERTA CERRADA!");
+//    estado = gpio_get_level(CERRADURA_GPIO);
+//    self->timeout_count = -1;
+    return res;
 }
 
 esp_err_t jpg_httpd_handler(httpd_req_t *req){
@@ -269,6 +285,15 @@ static const httpd_uri_t single_capture = {
         .user_ctx  = "Hello World!"
 };
 
+static const httpd_uri_t cerradura = {
+        .uri       = "/cerradura",
+        .method    = HTTP_GET,
+        .handler   = cerradura_handler,
+        /* Let's pass response string in user
+         * context to demonstrate it's usage */
+        .user_ctx  = "Hello World!"
+};
+
 static const httpd_uri_t hello = {
         .uri       = "/hello",
         .method    = HTTP_GET,
@@ -403,6 +428,7 @@ httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &ctrl);
         httpd_register_uri_handler(server, &video);
         httpd_register_uri_handler(server, &single_capture);
+        httpd_register_uri_handler(server, &cerradura);
         return server;
     }
 
