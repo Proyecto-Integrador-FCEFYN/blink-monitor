@@ -2,10 +2,12 @@
 // Created by agustin on 28/04/22.
 //
 #include "freertos/FreeRTOS.h"
+#include <esp_timer.h>
 #include <freertos/queue.h>
 #include <driver/uart.h>
 #include <string.h>
 #include <esp_log.h>
+#include <esp_http_client.h>
 #include "rfid_handler.h"
 #include "macros.h"
 
@@ -17,6 +19,7 @@ static const uart_port_t uart_num = UART_NUM_2;
 
 void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
 {
+        ESP_LOGI(TAG, "INGRESO A INIT RFID");
 
     /* Configure the IOMUX register for pad BLINK_GPIO (some pads are
       muxed to GPIO on reset already, but some default to other
@@ -37,7 +40,7 @@ void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
     ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
     // Set UART pins(TX: IO4, RX: IO5, RTS: IO18, CTS: IO19)
     ESP_ERROR_CHECK(uart_set_pin(UART_NUM_2,
-                                 12,
+                                 -1,
                                  13,
                                  UART_PIN_NO_CHANGE,
                                  UART_PIN_NO_CHANGE));
@@ -61,6 +64,7 @@ void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
     //Creacion de thread
     pthread_t t;
     pthread_create(&t, &attr, rfid_handler_task, (void *) self);
+    ESP_LOGI(TAG, "UART INICIALIZADO!!!!!");
 }
 
 _Noreturn void* rfid_handler_task(void* arg)
@@ -106,9 +110,38 @@ _Noreturn void* rfid_handler_task(void* arg)
                 if (strncmp(lastSteadyState, RFIDcurrentState, 14) != 0)
 //                if(lastSteadyState == HIGH && RFIDcurrentState == LOW)
                 {
-                    self->monitor->disparar(self->monitor, T_EVENTO_RFID);
+                    /*self->monitor->disparar(self->monitor, T_EVENTO_RFID);
 //                    self->buffer_size = 14;
-//                    strncpy(self->buffer, RFIDcurrentState,14);
+//                    strncpy(self->buffer, RFIDcurrentState,14);*/
+                    // HTTPS-------------------------------------------------------------------
+                    extern const uint8_t localhost_pem_start[] asm("_binary_localhost_pem_start");
+                    extern const uint8_t localhost_pem_end[]   asm("_binary_localhost_pem_end");
+
+                    esp_http_client_config_t cfg = {
+                        .url = API_BASE_URL"/api/v1/event/rfid",
+                        .method = HTTP_METHOD_POST,
+//                        .cert_pem = (const char *) localhost_pem_start,
+                        .skip_cert_common_name_check = true
+//                        .client_cert_pem = (const char *) localhost_pem_start
+                    };
+                    esp_http_client_handle_t client = esp_http_client_init(&cfg);
+
+                    esp_http_client_set_header(client, "Content-Type", "application/json");
+                    char data[32] = {0};
+                    if (strcmp(RFIDcurrentState, "") == 0)
+                    {
+                        strcpy(data, "NO_RFID");
+                    }
+                    else
+                    {
+                        strcpy(data, RFIDcurrentState);
+                    }
+                    ESP_LOGI(TAG, "SE CONSTRUYO EL BODY %s", data);
+                    esp_http_client_set_post_field(client, data, strlen(data));
+                    esp_http_client_perform(client);
+                    esp_http_client_cleanup(client);
+
+
                     ESP_LOGI(TAG, "Llego nuevo codigo RFID");
                 }
 //                else if (strncmp(lastSteadyState, RFIDcurrentState, 14) == 0)

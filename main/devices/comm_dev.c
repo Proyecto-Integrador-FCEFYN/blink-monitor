@@ -61,6 +61,8 @@ void comm_enviarfoto(dev_comm_t *self)
 //    char *saludo = "HOLA!";
 
 //    printf("LALALALALLAA %i\n",pic0->len);
+
+
     esp_mqtt_client_publish(my_client,
                             HOST"/"CAMARA_TOPIC,
                             (const char *) pic0->buf,

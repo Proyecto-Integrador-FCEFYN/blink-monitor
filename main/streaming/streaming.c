@@ -19,11 +19,22 @@
 #include "esp_timer.h"
 #include "macros.h"
 #include <esp_http_server.h>
+#include "rfid_handler.h"
+#include "driver/ledc.h"
+#include <esp_https_server.h>
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
+
+#define LEDC_TIMER              LEDC_TIMER_0
+#define LEDC_MODE               LEDC_LOW_SPEED_MODE
+#define LEDC_OUTPUT_IO          (14) // Define the output GPIO
+#define LEDC_CHANNEL            LEDC_CHANNEL_0
+#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
+#define LEDC_DUTY               (4095) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
+#define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
 
 static const char *TAG = "STREAMING";
 
@@ -44,6 +55,31 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+static void example_ledc_init(void)
+{
+    // Prepare and then apply the LEDC PWM timer configuration
+    ledc_timer_config_t ledc_timer = {
+        .speed_mode       = LEDC_MODE,
+        .timer_num        = LEDC_TIMER,
+        .duty_resolution  = LEDC_DUTY_RES,
+        .freq_hz          = LEDC_FREQUENCY,  // Set output frequency at 5 kHz
+        .clk_cfg          = LEDC_AUTO_CLK
+    };
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
+
+    // Prepare and then apply the LEDC PWM channel configuration
+    ledc_channel_config_t ledc_channel = {
+        .speed_mode     = LEDC_MODE,
+        .channel        = LEDC_CHANNEL,
+        .timer_sel      = LEDC_TIMER,
+        .intr_type      = LEDC_INTR_DISABLE,
+        .gpio_num       = LEDC_OUTPUT_IO,
+        .duty           = 0, // Set duty to 0%
+        .hpoint         = 0
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+}
+
 esp_err_t cerradura_handler(httpd_req_t *req)
 {
     esp_err_t res = ESP_OK;
@@ -56,6 +92,24 @@ esp_err_t cerradura_handler(httpd_req_t *req)
     ESP_LOGI(TAG,"PUERTA CERRADA!");
 //    estado = gpio_get_level(CERRADURA_GPIO);
 //    self->timeout_count = -1;
+
+ // Set the LEDC peripheral configuration
+    example_ledc_init();
+    // Set duty to 50%
+    ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
+    // Update duty to apply the new value
+    ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+    return res;
+}
+
+esp_err_t rfid_handler(httpd_req_t *req)
+{
+    esp_err_t res = ESP_OK;
+
+//    httpd_resp_send_chunk(req, buf, ret);
+
+    ESP_LOGI(TAG, "%s", RFIDcurrentState);
+    httpd_resp_sendstr(req, RFIDcurrentState);
     return res;
 }
 
@@ -181,9 +235,9 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
         int64_t frame_time = fr_end - last_frame;
         last_frame = fr_end;
         frame_time /= 1000;
-        ESP_LOGI(TAG, "MJPG: %uKB %ums (%.1ffps)",
-                 (uint32_t)(_jpg_buf_len/1024),
-                 (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time);
+//        ESP_LOGI(TAG, "MJPG: %uKB %ums (%.1ffps)",
+//                 (uint32_t)(_jpg_buf_len/1024),
+//                 (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time);
     }
 
     last_frame = 0;
@@ -289,6 +343,15 @@ static const httpd_uri_t cerradura = {
         .uri       = "/cerradura",
         .method    = HTTP_GET,
         .handler   = cerradura_handler,
+        /* Let's pass response string in user
+         * context to demonstrate it's usage */
+        .user_ctx  = "Hello World!"
+};
+
+static const httpd_uri_t register_rfid = {
+        .uri       = "/register_rfid",
+        .method    = HTTP_GET,
+        .handler   = rfid_handler,
         /* Let's pass response string in user
          * context to demonstrate it's usage */
         .user_ctx  = "Hello World!"
@@ -412,15 +475,29 @@ static const httpd_uri_t ctrl = {
         .user_ctx  = NULL
 };
 
-httpd_handle_t start_webserver(void)
+httpd_handle_t start_webserver()
 {
     httpd_handle_t server = NULL;
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.lru_purge_enable = true;
+//    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+//    config.lru_purge_enable = true;
+
+    httpd_ssl_config_t conf = HTTPD_SSL_CONFIG_DEFAULT();
+    extern const unsigned char cacert_pem_start[] asm("_binary_cacert_pem_start");
+    extern const unsigned char cacert_pem_end[]   asm("_binary_cacert_pem_end");
+
+    conf.cacert_pem = cacert_pem_start;
+    // cppcheck-suppress comparePointers
+    conf.cacert_len = cacert_pem_end - cacert_pem_start;
+
+    extern const unsigned char prvtkey_pem_start[] asm("_binary_prvtkey_pem_start");
+    extern const unsigned char prvtkey_pem_end[]   asm("_binary_prvtkey_pem_end");
+    conf.prvtkey_pem = prvtkey_pem_start;
+    conf.prvtkey_len = prvtkey_pem_end - prvtkey_pem_start;
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
-    if (httpd_start(&server, &config) == ESP_OK) {
+//    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    if (httpd_ssl_start(&server, &conf) == ESP_OK) {
+//    if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
         httpd_register_uri_handler(server, &hello);
@@ -429,6 +506,7 @@ httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &video);
         httpd_register_uri_handler(server, &single_capture);
         httpd_register_uri_handler(server, &cerradura);
+        httpd_register_uri_handler(server, &register_rfid);
         return server;
     }
 
@@ -439,7 +517,8 @@ httpd_handle_t start_webserver(void)
 void stop_webserver(httpd_handle_t server)
 {
     // Stop the httpd server
-    httpd_stop(server);
+//    httpd_stop(server);
+    httpd_ssl_stop(server);
 }
 
 void disconnect_handler(void* arg, esp_event_base_t event_base,

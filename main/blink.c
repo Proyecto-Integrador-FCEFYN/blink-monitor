@@ -19,9 +19,10 @@
 #include "mqtt_client.h"
 #include "streaming/streaming.h"
 //Handlers
-#include "mqtt_handler.h"
+//#include "mqtt_handler.h"
 #include "rfid_handler.h"
 #include "boton_handler.h"
+#include "movimiento_handler.h"
 //Devices
 #include "cam.h"
 #include "comm_dev.h"
@@ -73,18 +74,20 @@ void app_main(void) {
     //Init handlers
     boton_handler_t boton_handler;
     boton_handler_init(&boton_handler, &monitor);
+    movimiento_handler_t movimiento_handler;
+    movimiento_handler_init(&movimiento_handler, &monitor);
     rfid_handler_t rfid_handler;
     rfid_handler_init(&rfid_handler, &monitor);
-    mqtt_handler_t mqtt_handler;
-    mqtt_handler_init(&mqtt_handler, &client,&monitor);
+//    mqtt_handler_t mqtt_handler;
+//    mqtt_handler_init(&mqtt_handler, &client,&monitor);
 
     // Init devices
     dev_camera_t cam_device;
     camera_device_init(&cam_device);
     dev_cerradura_t cerradura_dev;
     cerradura_device_init(&cerradura_dev,5);
-    dev_comm_t comm_device;
-    comm_device_init(&comm_device, &client, &cam_device, &rfid_handler);
+//    dev_comm_t comm_device;
+//    comm_device_init(&comm_device, &client, &cam_device, &rfid_handler);
 
     // SOFTWARE
     segmento_t segmentos[3];
@@ -96,7 +99,9 @@ void app_main(void) {
     };
     objeto_t objetos0[] = {
             (objeto_t)&cam_device,
-            (objeto_t)&comm_device
+            NULL
+//            (objeto_t)&comm_device
+
     };
 
     segmento_init(&segmentos[0],
@@ -127,7 +132,8 @@ void app_main(void) {
             (action_p) comm_enviarcodigo
     };
     objeto_t objetos2[] = {
-            (objeto_t)&comm_device,
+            NULL
+//            (objeto_t)&comm_device,
     };
     segmento_init(&segmentos[2],
                   &monitor,
@@ -139,7 +145,7 @@ void app_main(void) {
     // ENABLE
     rfid_handler.enabled = 1;
     boton_handler.enabled = 1;
-    mqtt_handler.enabled = 1;
+//    mqtt_handler.enabled = 1;
 
     software_t software;
     software_init(&software, segmentos);
@@ -150,22 +156,23 @@ void app_main(void) {
     // *************************** //
 
     static httpd_handle_t server = NULL;
-    ESP_ERROR_CHECK(esp_event_handler_register(
-            IP_EVENT,
-            IP_EVENT_STA_GOT_IP,
-            &connect_handler,
-            &server));
-    ESP_ERROR_CHECK(esp_event_handler_register(
-            WIFI_EVENT,
-            WIFI_EVENT_STA_DISCONNECTED,
-            &disconnect_handler,
-            &server));
+//    ESP_ERROR_CHECK(esp_event_handler_register(
+//            IP_EVENT,
+//            IP_EVENT_STA_GOT_IP,
+//            &connect_handler,
+//            &server));
+//    ESP_ERROR_CHECK(esp_event_handler_register(
+//            WIFI_EVENT,
+//            WIFI_EVENT_STA_DISCONNECTED,
+//            &disconnect_handler,
+//            &server));
     server = start_webserver();
 
 //  Muy importante que esta función no muera.
     while (1)
     {
-        vTaskDelay(100);
+        printf("[APP] Free memory: %d bytes\n", esp_get_free_heap_size() );
+        vTaskDelay(1000);
     }
 }
 
