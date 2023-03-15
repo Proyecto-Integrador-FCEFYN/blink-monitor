@@ -9,11 +9,12 @@ countryName = AR
 stateOrProvinceName = Cordoba
 localityName = Cordoba
 organizationName = Laboratorio de Arquitectura de Computadoras
-commonName = 192.168.1.140: Self-signed certificate
+commonName = Sistema de Control de Ingreso
 [req_ext]
 subjectAltName = @alt_names
 [v3_req]
 subjectAltName = @alt_names
 [alt_names]
 IP.1 = 192.168.1.140
+IP.2 = 192.168.24.123
 
