@@ -55,50 +55,22 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
-static void example_ledc_init(void)
-{
-    // Prepare and then apply the LEDC PWM timer configuration
-    ledc_timer_config_t ledc_timer = {
-        .speed_mode       = LEDC_MODE,
-        .timer_num        = LEDC_TIMER,
-        .duty_resolution  = LEDC_DUTY_RES,
-        .freq_hz          = LEDC_FREQUENCY,  // Set output frequency at 5 kHz
-        .clk_cfg          = LEDC_AUTO_CLK
-    };
-    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
-
-    // Prepare and then apply the LEDC PWM channel configuration
-    ledc_channel_config_t ledc_channel = {
-        .speed_mode     = LEDC_MODE,
-        .channel        = LEDC_CHANNEL,
-        .timer_sel      = LEDC_TIMER,
-        .intr_type      = LEDC_INTR_DISABLE,
-        .gpio_num       = LEDC_OUTPUT_IO,
-        .duty           = 0, // Set duty to 0%
-        .hpoint         = 0
-    };
-    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-}
 
 esp_err_t cerradura_handler(httpd_req_t *req)
 {
     esp_err_t res = ESP_OK;
 
-    gpio_set_level(CERRADURA_GPIO, 1);
+    gpio_set_level(CERRADURA_GPIO, 0);
     ESP_LOGI(TAG,"PUERTA ABIERTA!");
 //    estado = gpio_get_level(CERRADURA_GPIO);
     sleep(CERRADURA_ABIERTA);
-    gpio_set_level(CERRADURA_GPIO, 0);
+    gpio_set_level(CERRADURA_GPIO, 1);
     ESP_LOGI(TAG,"PUERTA CERRADA!");
 //    estado = gpio_get_level(CERRADURA_GPIO);
 //    self->timeout_count = -1;
 
- // Set the LEDC peripheral configuration
-    example_ledc_init();
-    // Set duty to 50%
-    ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
-    // Update duty to apply the new value
-    ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_CHANNEL));
+    const char* resp_str = (const char*) req->user_ctx;
+    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     return res;
 }
 
@@ -345,7 +317,7 @@ static const httpd_uri_t cerradura = {
         .handler   = cerradura_handler,
         /* Let's pass response string in user
          * context to demonstrate it's usage */
-        .user_ctx  = "Hello World!"
+        .user_ctx  = "Llego orden de abrir la puerta!"
 };
 
 static const httpd_uri_t register_rfid = {

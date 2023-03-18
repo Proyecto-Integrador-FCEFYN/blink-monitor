@@ -66,11 +66,10 @@
 
 
 // CONFIGURACION RFID
-#define RFID_TX_PORT
-#define RFID_RX_PORT
+#define RFID_RX_PORT 13
 
 // CONFIGURACION CERRADURA
-#define CERRADURA_GPIO 4
+#define CERRADURA_GPIO 14
 #define CERRADURA_TIMEOUT 10 //segundos
 #define CERRADURA_ABIERTA 5
 
@@ -90,7 +89,7 @@
 #define T_EVENTO_BOTON 7
 
 // HTTP
-#define API_BASE_URL "https://192.168.1.100"
+#define API_BASE_URL "https://192.168.1.110"
 
 
 #define NULL_TRANSITION -1

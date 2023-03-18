@@ -79,7 +79,7 @@ _Noreturn void* boton_handler_task(void* arg)
                     extern const uint8_t localhost_pem_end[]   asm("_binary_localhost_pem_end");
 
                     esp_http_client_config_t cfg = {
-                        .url = "https://192.168.1.100/api/v1/event/timbre",
+                        .url = API_BASE_URL"/api/v1/event/timbre",
                         .method = HTTP_METHOD_POST,
 //                        .cert_pem = (const char *) localhost_pem_start,
                         .skip_cert_common_name_check = true
