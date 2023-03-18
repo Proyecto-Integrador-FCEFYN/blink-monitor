@@ -81,8 +81,11 @@ _Noreturn void* boton_handler_task(void* arg)
                     esp_http_client_config_t cfg = {
                         .url = API_BASE_URL"/api/v1/event/timbre",
                         .method = HTTP_METHOD_POST,
-//                        .cert_pem = (const char *) localhost_pem_start,
+                        .auth_type = HTTP_AUTH_TYPE_BASIC,
+                        .username = API_USERNAME,
+                        .password = API_PASSWORD,
                         .skip_cert_common_name_check = true
+//                        .cert_pem = (const char *) localhost_pem_start,
 //                        .client_cert_pem = (const char *) localhost_pem_start
                     };
                     esp_http_client_handle_t client = esp_http_client_init(&cfg);
