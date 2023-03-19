@@ -192,7 +192,7 @@ esp_err_t jpg_httpd_handler(httpd_req_t *req){
     }
 
     camera_fb_t * fb = NULL;
-    esp_err_t res = ESP_OK;
+    res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
@@ -232,7 +232,7 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
     }
 
     camera_fb_t * fb = NULL;
-    esp_err_t res = ESP_OK;
+    res = ESP_OK;
     size_t _jpg_buf_len;
     uint8_t * _jpg_buf;
     char * part_buf[64];
@@ -337,7 +337,7 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     {
         return ESP_FAIL;
     }
-    
+
     char*  buf;
     size_t buf_len;
 
