@@ -22,21 +22,21 @@
 #include "rfid_handler.h"
 #include "driver/ledc.h"
 #include <esp_https_server.h>
+#include "esp_tls_crypto.h"
 
+#define HTTPD_401      "401 UNAUTHORIZED"           /*!< HTTP Response 401 */
 #define PART_BOUNDARY "123456789000000000000987654321"
+
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-#define LEDC_TIMER              LEDC_TIMER_0
-#define LEDC_MODE               LEDC_LOW_SPEED_MODE
-#define LEDC_OUTPUT_IO          (14) // Define the output GPIO
-#define LEDC_CHANNEL            LEDC_CHANNEL_0
-#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
-#define LEDC_DUTY               (4095) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
-#define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
-
 static const char *TAG = "STREAMING";
+
+typedef struct {
+    char    *username;
+    char    *password;
+} basic_auth_info_t;
 
 typedef struct {
         httpd_req_t *req;
@@ -55,10 +55,101 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+static char *http_auth_basic(const char *username, const char *password)
+{
+    int out;
+    char *user_info = NULL;
+    char *digest = NULL;
+    size_t n = 0;
+    asprintf(&user_info, "%s:%s", username, password);
+    if (!user_info) {
+        ESP_LOGE(TAG, "No enough memory for user information");
+        return NULL;
+    }
+    esp_crypto_base64_encode(NULL, 0, &n, (const unsigned char *)user_info, strlen(user_info));
+
+    /* 6: The length of the "Basic " string
+     * n: Number of bytes for a base64 encode format
+     * 1: Number of bytes for a reserved which be used to fill zero
+    */
+    digest = calloc(1, 6 + n + 1);
+    if (digest) {
+        strcpy(digest, "Basic ");
+        esp_crypto_base64_encode((unsigned char *)digest + 6, n, (size_t *)&out, (const unsigned char *)user_info, strlen(user_info));
+    }
+    free(user_info);
+    return digest;
+}
+
+/* An HTTP GET handler */
+static esp_err_t basic_auth_handler(httpd_req_t *req)
+{
+    char *buf = NULL;
+    size_t buf_len = 0;
+    // basic_auth_info_t *basic_auth_info = req->user_ctx;
+    basic_auth_info_t basic_auth_info = {
+        .username = HTTP_AUTH_USERNAME,
+        .password = HTTP_AUTH_PASSWORD
+    };
+
+    buf_len = httpd_req_get_hdr_value_len(req, "Authorization") + 1;
+    if (buf_len > 1) {
+        buf = calloc(1, buf_len);
+        if (!buf) {
+            ESP_LOGE(TAG, "No enough memory for basic authorization");
+            return ESP_ERR_NO_MEM;
+        }
+
+        if (httpd_req_get_hdr_value_str(req, "Authorization", buf, buf_len) == ESP_OK) {
+            ESP_LOGI(TAG, "Found header => Authorization: %s", buf);
+        } else {
+            ESP_LOGE(TAG, "No auth value received");
+        }
+
+        char *auth_credentials = http_auth_basic(basic_auth_info.username, basic_auth_info.password);
+        if (!auth_credentials) {
+            ESP_LOGE(TAG, "No enough memory for basic authorization credentials");
+            free(buf);
+            return ESP_ERR_NO_MEM;
+        }
+
+        if (strncmp(auth_credentials, buf, buf_len)) {
+            ESP_LOGE(TAG, "Not authenticated");
+            httpd_resp_set_status(req, HTTPD_401);
+            httpd_resp_set_type(req, "application/json");
+            httpd_resp_set_hdr(req, "Connection", "keep-alive");
+            httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"ESP32_API\"");
+            httpd_resp_send(req, NULL, 0);
+            return ESP_FAIL;
+        } else {
+            ESP_LOGI(TAG, "Authenticated!");
+            // char *basic_auth_resp = NULL;
+            httpd_resp_set_status(req, HTTPD_200);
+            httpd_resp_set_type(req, "application/json");
+            httpd_resp_set_hdr(req, "Connection", "keep-alive");
+        }
+        free(auth_credentials);
+        free(buf);
+    } else {
+        ESP_LOGE(TAG, "No auth header received");
+        httpd_resp_set_status(req, HTTPD_401);
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_set_hdr(req, "Connection", "keep-alive");
+        httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"Hello\"");
+        httpd_resp_send(req, NULL, 0);
+        return ESP_FAIL;
+    }
+
+    return ESP_OK;
+}
 
 esp_err_t cerradura_handler(httpd_req_t *req)
 {
-    esp_err_t res = ESP_OK;
+    esp_err_t res = basic_auth_handler(req);
+    if (res != ESP_OK)
+    {
+        return ESP_FAIL;
+    }
 
     gpio_set_level(CERRADURA_GPIO, 0);
     ESP_LOGI(TAG,"PUERTA ABIERTA!");
@@ -66,8 +157,6 @@ esp_err_t cerradura_handler(httpd_req_t *req)
     sleep(CERRADURA_ABIERTA);
     gpio_set_level(CERRADURA_GPIO, 1);
     ESP_LOGI(TAG,"PUERTA CERRADA!");
-//    estado = gpio_get_level(CERRADURA_GPIO);
-//    self->timeout_count = -1;
 
     const char* resp_str = (const char*) req->user_ctx;
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
@@ -76,16 +165,32 @@ esp_err_t cerradura_handler(httpd_req_t *req)
 
 esp_err_t rfid_handler(httpd_req_t *req)
 {
-    esp_err_t res = ESP_OK;
-
-//    httpd_resp_send_chunk(req, buf, ret);
-
-    ESP_LOGI(TAG, "%s", RFIDcurrentState);
-    httpd_resp_sendstr(req, RFIDcurrentState);
+    esp_err_t res = basic_auth_handler(req);
+    if (res != ESP_OK)
+    {
+        return ESP_FAIL;
+    }
+    char buf[16] = {0};
+    ESP_LOGI(TAG, "%i", current_tag);
+    // httpd_resp_sendstr(req, RFIDcurrentState);
+    res = sprintf(buf, "%i", current_tag);
+    if (res > 0)
+    {
+        httpd_resp_sendstr(req, buf);
+        res = ESP_OK;
+    } else {
+        res = ESP_FAIL;
+    }
     return res;
 }
 
 esp_err_t jpg_httpd_handler(httpd_req_t *req){
+    esp_err_t res = basic_auth_handler(req);
+    if (res != ESP_OK)
+    {
+        return ESP_FAIL;
+    }
+
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
@@ -120,6 +225,12 @@ esp_err_t jpg_httpd_handler(httpd_req_t *req){
 }
 
 esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
+    esp_err_t res = basic_auth_handler(req);
+    if (res != ESP_OK)
+    {
+        return ESP_FAIL;
+    }
+
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t _jpg_buf_len;
@@ -221,6 +332,12 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
 /* An HTTP GET handler */
 static esp_err_t hello_get_handler(httpd_req_t *req)
 {
+    esp_err_t res = basic_auth_handler(req);
+    if (res != ESP_OK)
+    {
+        return ESP_FAIL;
+    }
+    
     char*  buf;
     size_t buf_len;
 

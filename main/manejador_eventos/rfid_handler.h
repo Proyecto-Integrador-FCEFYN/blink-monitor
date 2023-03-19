@@ -20,6 +20,7 @@ void rfid_handler_init(rfid_handler_t *h, monitor_t *m);
 //void guardar_rfid(handler_t *self);
 
 char RFIDcurrentState[14];
+int current_tag;
 
 _Noreturn void* rfid_handler_task(void* arg);
 

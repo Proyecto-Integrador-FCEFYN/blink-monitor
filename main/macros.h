@@ -93,6 +93,9 @@
 #define API_USERNAME "usuario-api"
 #define API_PASSWORD "password-api"
 
+#define HTTP_AUTH_USERNAME "usuario-esp32"
+#define HTTP_AUTH_PASSWORD "password-esp32"
+
 
 #define NULL_TRANSITION -1
 #endif //PTHREAD_MONITOR_IA32_MACROS_H

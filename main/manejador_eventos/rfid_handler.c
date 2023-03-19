@@ -63,6 +63,8 @@ void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
     //Creacion de thread
     pthread_t t;
     pthread_create(&t, &attr, rfid_handler_task, (void *) self);
+    
+    current_tag = 0;
     ESP_LOGI(TAG, "UART INICIALIZADO!!!!!");
 }
 
@@ -193,7 +195,7 @@ _Noreturn void* rfid_handler_task(void* arg)
                     esp_http_client_set_header(client, "Content-Type", "application/json");
 
                     char data[32] = {0};    
-                    int current_tag = extract_tag((uint8_t*) RFIDcurrentState);
+                    current_tag = extract_tag((uint8_t*) RFIDcurrentState);
                     if (current_tag > 0) // Para evitar las lecturas rnd de 0
                     {
                         snprintf(data, 32, "%i", current_tag);
