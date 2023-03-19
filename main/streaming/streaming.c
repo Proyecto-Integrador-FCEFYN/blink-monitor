@@ -185,11 +185,8 @@ esp_err_t rfid_handler(httpd_req_t *req)
 }
 
 esp_err_t jpg_httpd_handler(httpd_req_t *req){
-    esp_err_t res = basic_auth_handler(req);
-    if (res != ESP_OK)
-    {
-        return ESP_FAIL;
-    }
+    esp_err_t res;
+
 
     camera_fb_t * fb = NULL;
     res = ESP_OK;
@@ -225,12 +222,7 @@ esp_err_t jpg_httpd_handler(httpd_req_t *req){
 }
 
 esp_err_t jpg_stream_httpd_handler(httpd_req_t *req){
-    esp_err_t res = basic_auth_handler(req);
-    if (res != ESP_OK)
-    {
-        return ESP_FAIL;
-    }
-
+    esp_err_t res;
     camera_fb_t * fb = NULL;
     res = ESP_OK;
     size_t _jpg_buf_len;
