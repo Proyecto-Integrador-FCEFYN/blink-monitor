@@ -118,8 +118,8 @@ void movimiento_handler_init(movimiento_handler_t *self, monitor_t *m)
     io_conf2.intr_type = GPIO_INTR_DISABLE; //interrupt of rising edge
     io_conf2.pin_bit_mask = 1<<MOVIMIENTO_GPIO; //bit mask of the pins, use GPIO4/5 here
     io_conf2.mode = GPIO_MODE_INPUT; //set as input mode
-    io_conf2.pull_up_en = 1; //enable pull-up mode
-    io_conf2.pull_down_en = 0; //disable pull-down mode
+    io_conf2.pull_up_en = GPIO_PULLUP_DISABLE; //enable pull-up mode
+    io_conf2.pull_down_en = GPIO_PULLDOWN_ENABLE; //disable pull-down mode
     gpio_config(&io_conf2);
 
     self->monitor = m;

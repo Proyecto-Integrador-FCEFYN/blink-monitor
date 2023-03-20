@@ -24,12 +24,6 @@ void monitor_disparar2(monitor_t *monitor, int disparo)
 #if DEBUG
         ESP_LOGW(TAG, "No Sensibilizada: %i -- espera\n", disparo);
 #endif
-//        if(monitor->petri->matriz_noperennes[disparo])
-//        {
-//            ESP_LOGW(TAG, "No Sensibilizada No Perenne: %i -- salgo\n", disparo);
-//            return;
-//        }
-//        else
         {
             pthread_cond_wait(&monitor->condition[disparo], &monitor->entrada);
         }

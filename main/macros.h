@@ -23,27 +23,29 @@
 
 //CONFIGURACION RED DE PETRI
 
-#define PLAZAS 10
-#define TRANSICIONES 11
-#define HILOS 3
+#define PLAZAS 14
+#define TRANSICIONES 14
+#define HILOS 6
 
 #define MARCADO \
-0,0,0,0,1,0,1,1,0,0
+0,0,0,0,0,1,1,1,1,5,0,0,0,1
 
-#define NOPERENNE \
-1,0,1,0,0,1,1,1,0,0,1
 
 #define INCIDENCIA \
-1,-1,0,0,0,0,0,0,0,0,0 ,\
-0,1,-1,0,0,-1,0,0,0,0,0,\
-0,0,1,-1,0,0,1,0,0,0,0 ,\
-0,0,0,1,-1,0,0,0,0,0,0 ,\
--1,0,0,0,1,1,0,-1,0,0,1,\
-0,0,0,0,0,0,-1,0,0,1,-1,\
--1,0,1,0,0,1,0,0,0,0,0 ,\
-0,0,0,0,0,0,1,0,-1,0,1 ,\
-0,0,0,0,0,0,0,0,1,-1,0 ,\
-0,0,0,0,0,0,0,1,-1,0,0
+1,0,0,0,0,0,-1,0,0,0,0,0,0,0, \
+0,1,0,0,0,0,0,0,-1,0,0,0,0,0, \
+0,0,1,0,0,0,0,0,0,-1,0,0,0,0, \
+0,0,0,1,0,0,0,0,0,0,-1,0,0,0, \
+0,0,0,0,1,0,0,0,0,0,0,-1,0,0, \
+0,0,0,-1,0,0,0,0,0,0,1,0,0,0, \
+-1,0,0,0,0,0,1,0,0,0,0,0,0,0, \
+0,-1,-1,0,0,0,0,1,0,1,0,0,0,0, \
+0,0,0,0,-1,0,0,0,0,0,0,0,0,1, \
+-1,-1,-1,-1,-1,-1,1,1,0,1,1,0,1,1, \
+0,0,0,0,0,0,0,-1,1,0,0,0,0,0, \
+0,0,0,0,0,0,0,0,0,0,0,1,0,-1, \
+0,0,0,0,0,1,0,0,0,0,0,0,-1,0, \
+0,0,0,0,0,-1,0,0,0,0,0,0,1,0
 
 // CONFIGURACION WIFI
 // POR AHORA ESTAN EN EL MENUCONFIG
@@ -76,7 +78,8 @@
 // CONFIGURACION BUZZER
 #define BUZZER_GPIO 14
 
-
+// FIXME: Hay que rehacer esto. Se actualizo la RDP.
+// 
 // EVENTOS DE LAS TRANSICIONES
 // HANDLER MQTT T
 #define T_PERMITIDO_BOTON 6
@@ -87,6 +90,23 @@
 #define T_EVENTO_RFID 0
 // HANDLER BOTON T
 #define T_EVENTO_BOTON 7
+
+// NUEVAS TRANSICIONES
+#define T_BOTON_SOLICITUD 0
+#define T_RFID_DETECCION_NUEVO 1
+#define T_RFID_SOLICITUD_ACTUAL 2
+#define T_CERRADURA_SOLICITUD 3
+#define T_FOTO_SOLICITUD 4
+#define T_MOVIMIENTO_DETECCION 5
+#define T_BOTON_ENVIAR 6
+#define T_RFID_ENVIAR_NUEVO 7
+#define T_RFID_ACTUALIZAR_NUEVO 8
+#define T_RFID_ENVIAR_ACTUAL 9
+#define T_CERRADURA_ENVIAR 10
+#define T_FOTO_SACAR 11
+#define T_MOVIMIENTO_ENVIAR 12
+#define T_FOTO_ENVIAR 13
+
 
 // HTTP
 #define API_BASE_URL "https://192.168.1.110"
