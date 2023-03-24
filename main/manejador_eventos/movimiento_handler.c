@@ -75,7 +75,7 @@ _Noreturn void* movimiento_handler_task(void* arg)
 
                     // HTTPS-------------------------------------------------------------------
                     extern const uint8_t localhost_pem_start[] asm("_binary_localhost_pem_start");
-                    extern const uint8_t localhost_pem_end[]   asm("_binary_localhost_pem_end");
+                    // extern const uint8_t localhost_pem_end[]   asm("_binary_localhost_pem_end");
 
                     esp_http_client_config_t cfg = {
                         .url = API_BASE_URL"/api/v1/event/movimiento",
@@ -83,9 +83,8 @@ _Noreturn void* movimiento_handler_task(void* arg)
                         .auth_type = HTTP_AUTH_TYPE_BASIC,
                         .username = API_USERNAME,
                         .password = API_PASSWORD,
-                        .skip_cert_common_name_check = true
-//                        .cert_pem = (const char *) localhost_pem_start,
-//                        .client_cert_pem = (const char *) localhost_pem_start
+                        .skip_cert_common_name_check = true,
+                        .cert_pem = (const char *) localhost_pem_start
                     };
                     esp_http_client_handle_t client = esp_http_client_init(&cfg);
                     esp_http_client_perform(client);

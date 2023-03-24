@@ -109,7 +109,7 @@
 
 
 // HTTP
-#define API_BASE_URL "https://192.168.1.110"
+#define API_BASE_URL "https://192.168.24.120"
 #define API_USERNAME "usuario-api"
 #define API_PASSWORD "password-api"
 

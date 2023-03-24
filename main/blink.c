@@ -69,65 +69,65 @@ void app_main(void) {
     dev_cerradura_t cerradura_dev;
     cerradura_device_init(&cerradura_dev,5);
 
-    // SOFTWARE
-    segmento_t segmentos[3];
+//     // SOFTWARE
+//     segmento_t segmentos[3];
 
-    int seq0[] = {8, 9};
-    action_p actions0[] = {
-            (action_p)camera_sacarfoto, // P8
-            (action_p)comm_enviarfoto   // P5
-    };
-    objeto_t objetos0[] = {
-            (objeto_t)&cam_device,
-            NULL
-//            (objeto_t)&comm_device
+//     int seq0[] = {8, 9};
+//     action_p actions0[] = {
+//             (action_p)camera_sacarfoto, // P8
+//             (action_p)comm_enviarfoto   // P5
+//     };
+//     objeto_t objetos0[] = {
+//             (objeto_t)&cam_device,
+//             NULL
+// //            (objeto_t)&comm_device
 
-    };
+//     };
 
-    segmento_init(&segmentos[0],
-                  &monitor,
-                  seq0,
-                  actions0,
-                  objetos0,
-                  2);
+//     segmento_init(&segmentos[0],
+//                   &monitor,
+//                   seq0,
+//                   actions0,
+//                   objetos0,
+//                   2);
 
-    int seq1[] = {3, 4};
-    action_p action1[] = {
-            (action_p)cerradura_abrirpuerta, // P2
-            NULL
-    };
-    objeto_t objetos1[] = {
-            (objeto_t)&cerradura_dev,
-            NULL
-    };
-    segmento_init(&segmentos[1],
-                  &monitor,
-                  seq1,
-                  action1,
-                  objetos1,
-                  2);
+//     int seq1[] = {3, 4};
+//     action_p action1[] = {
+//             (action_p)cerradura_abrirpuerta, // P2
+//             NULL
+//     };
+//     objeto_t objetos1[] = {
+//             (objeto_t)&cerradura_dev,
+//             NULL
+//     };
+//     segmento_init(&segmentos[1],
+//                   &monitor,
+//                   seq1,
+//                   action1,
+//                   objetos1,
+//                   2);
 
-    int seq2[] = {1};
-    action_p actions2[] = {
-            (action_p) comm_enviarcodigo
-    };
-    objeto_t objetos2[] = {
-            NULL
-//            (objeto_t)&comm_device,
-    };
-    segmento_init(&segmentos[2],
-                  &monitor,
-                  seq2,
-                  actions2,
-                  objetos2,
-                  1);
+//     int seq2[] = {1};
+//     action_p actions2[] = {
+//             (action_p) comm_enviarcodigo
+//     };
+//     objeto_t objetos2[] = {
+//             NULL
+// //            (objeto_t)&comm_device,
+//     };
+//     segmento_init(&segmentos[2],
+//                   &monitor,
+//                   seq2,
+//                   actions2,
+//                   objetos2,
+//                   1);
 
     // ENABLE
     rfid_handler.enabled = 1;
     boton_handler.enabled = 1;
 
-    software_t software;
-    software_init(&software, segmentos);
+    // software_t software;
+    // software_init(&software, segmentos);
 
 
     // *************************** //

@@ -40,7 +40,7 @@ pulsador</text>
             <text>Recurso
 CAMARA</text>
         </labels>
-        <labels x="968" y="330" width="103" height="32" border="true">
+        <labels x="923" y="315" width="103" height="32" border="true">
             <text>RECURSO
 Cerradura</text>
         </labels>
