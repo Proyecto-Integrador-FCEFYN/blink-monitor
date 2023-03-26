@@ -69,6 +69,7 @@
 
 // CONFIGURACION RFID
 #define RFID_RX_PORT 13
+#define RFID_SENSIBILIDAD 5000 // Milisegundos entre cada lectura
 
 // CONFIGURACION CERRADURA
 #define CERRADURA_GPIO 14

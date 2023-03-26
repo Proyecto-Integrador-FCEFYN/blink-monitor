@@ -62,7 +62,7 @@ void rfid_handler_init(rfid_handler_t *self, monitor_t *monitor)
     pthread_attr_init(&attr);
     //Creacion de thread
     pthread_t t;
-    pthread_create(&t, &attr, rfid_handler_task, (void *) self);
+    pthread_create(&t, &attr, v2_rfid_handler_task, (void *) self);
     
     current_tag = 0;
     ESP_LOGI(TAG, "UART INICIALIZADO!!!!!");
@@ -135,6 +135,35 @@ unsigned extract_tag(uint8_t *buffer) {
     printf("%s",print_buf);
     return tag;
 }
+
+void enviar_evento_rfid() 
+{
+    ESP_LOGI(TAG, "Envio evento rfid");
+    extern const uint8_t localhost_pem_start[] asm("_binary_localhost_pem_start");
+    // extern const uint8_t localhost_pem_end[]   asm("_binary_localhost_pem_end");
+    esp_http_client_config_t cfg = {
+        .url = API_BASE_URL"/api/v1/event/rfid",
+        .method = HTTP_METHOD_POST,
+        .auth_type = HTTP_AUTH_TYPE_BASIC,
+        .username = API_USERNAME,
+        .password = API_PASSWORD,
+        .skip_cert_common_name_check = true,
+        .cert_pem = (const char *) localhost_pem_start
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&cfg);
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    char data[32] = {0};    
+    current_tag = extract_tag((uint8_t*) RFIDcurrentState);
+    if (current_tag > 0) // Para evitar las lecturas rnd de 0
+    {
+        snprintf(data, 32, "%i", current_tag);
+        ESP_LOGI(TAG, "SE CONSTRUYO EL BODY %s", data);
+        esp_http_client_set_post_field(client, data, strlen(data));
+        esp_http_client_perform(client);
+        esp_http_client_cleanup(client);
+        ESP_LOGI(TAG, "Se envio un codigo RFID!");
+    }
+} 
 
 _Noreturn void* rfid_handler_task(void* arg)
 {
@@ -211,4 +240,20 @@ _Noreturn void* rfid_handler_task(void* arg)
         } //enable
         vTaskDelay(100);
     } //while
+}
+
+_Noreturn void* v2_rfid_handler_task(void* arg)
+{
+    while(1)
+    {
+        uart_read_bytes(uart_num, RFIDcurrentState, 14, pdMS_TO_TICKS(RFID_SENSIBILIDAD)); //14 es el largo del codigo // 
+        if (!strcmp(RFIDcurrentState, "")) {continue;} // Si no recibi nada, salir.
+        ESP_LOGI(TAG, "Lei un codigo de RFID (raw) %s", RFIDcurrentState);
+        
+        enviar_evento_rfid();
+
+        // Borrar el buffer. Esto soluciona usar el mismo llavero dos veces seguidas.
+        uart_flush(uart_num);
+        strncpy(RFIDcurrentState, "", 14);
+    }
 }

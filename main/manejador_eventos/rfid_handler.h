@@ -22,6 +22,9 @@ void rfid_handler_init(rfid_handler_t *h, monitor_t *m);
 char RFIDcurrentState[14];
 int current_tag;
 
+void enviar_evento_rfid(); 
+
 _Noreturn void* rfid_handler_task(void* arg);
+_Noreturn void* v2_rfid_handler_task(void* arg);
 
 #endif //BLINK_RFID_HANDLER_H
