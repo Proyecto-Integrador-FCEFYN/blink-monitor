@@ -16,7 +16,6 @@
 #include "movimiento_handler.h"
 //Devices
 #include "cam.h"
-#include "comm_dev.h"
 #include "cerradura_device.h"
 
 #define _REENTRANT

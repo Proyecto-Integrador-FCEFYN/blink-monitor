@@ -9,7 +9,8 @@
 #include "freertos/FreeRTOS.h"
 #include <freertos/task.h>
 #include "driver/gpio.h"
-#include "comm_dev.h"
+#include "macros.h"
+#include <unistd.h>
 
 static const char *TAG = "CERRADURA";
 
@@ -24,22 +25,6 @@ void cerradura_abrirpuerta(dev_cerradura_t *self)
     self->estado = gpio_get_level(CERRADURA_GPIO);
     self->timeout_count = -1;
 }
-
-void cerradura_esperar_timeout(dev_cerradura_t *self)
-{
-    self->timeout_count = 0;
-    for (int i = 0; i<self->timeout_limit; ++i)
-    {
-        sleep(1);
-        self->timeout_count++;
-        if (self->timeout_count < 0)
-        {
-            break;
-        }
-    }
-    ESP_LOGI(TAG,"Se llego al limite de timeout");
-}
-
 
 void cerradura_device_init(dev_cerradura_t *self, int duracion_apertura)
 {
