@@ -26,6 +26,11 @@ static const char *TAG = "MOVIMIENTO_HANDLER";
 #define LOW 0
 #define HIGH 1
 
+void enviar_evento_movimiento() 
+{
+    ESP_LOGI(TAG, "Envio evento movimiento");
+}
+
 _Noreturn void* movimiento_handler_task(void* arg)
 {
 

@@ -1,79 +1,79 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><pnml>
     <net id="Net-One" type="P/T net">
         <token id="Default" enabled="true" red="0" green="0" blue="0"/>
-        <labels x="994" y="259" width="59" height="34" border="true">
+        <labels x="995" y="260" width="60" height="35" border="true">
             <text>abrir
 puerta</text>
         </labels>
-        <labels x="516" y="282" width="59" height="34" border="true">
+        <labels x="517" y="283" width="60" height="35" border="true">
             <text>Actualizo
 valor</text>
         </labels>
-        <labels x="184" y="124" width="89" height="34" border="true">
+        <labels x="185" y="125" width="90" height="35" border="true">
             <text>detector
 movimiento</text>
         </labels>
-        <labels x="1159" y="394" width="59" height="34" border="true">
+        <labels x="1160" y="395" width="60" height="35" border="true">
             <text>enviar foto</text>
         </labels>
-        <labels x="499" y="379" width="59" height="34" border="true">
+        <labels x="500" y="380" width="60" height="35" border="true">
             <text>envio
 evento</text>
         </labels>
-        <labels x="814" y="274" width="59" height="34" border="true">
+        <labels x="815" y="275" width="60" height="35" border="true">
             <text>envio
 evento</text>
         </labels>
-        <labels x="139" y="274" width="59" height="34" border="true">
+        <labels x="140" y="275" width="60" height="35" border="true">
             <text>envio
 evento</text>
         </labels>
-        <labels x="428" y="234" width="59" height="34" border="true">
+        <labels x="429" y="235" width="60" height="35" border="true">
             <text>Envio
 evento</text>
         </labels>
-        <labels x="384" y="119" width="59" height="34" border="true">
+        <labels x="385" y="120" width="60" height="35" border="true">
             <text>presiona
 pulsador</text>
         </labels>
-        <labels x="1339" y="274" width="59" height="34" border="true">
+        <labels x="1340" y="275" width="60" height="35" border="true">
             <text>Recurso
 CAMARA</text>
         </labels>
-        <labels x="923" y="315" width="103" height="32" border="true">
+        <labels x="924" y="316" width="104" height="33" border="true">
             <text>RECURSO
 Cerradura</text>
         </labels>
-        <labels x="34" y="166" width="85" height="51" border="true">
+        <labels x="35" y="167" width="86" height="52" border="true">
             <text>Recurso
 DETECTOR
 MOVIMIENTO</text>
         </labels>
-        <labels x="294" y="278" width="77" height="34" border="true">
+        <labels x="295" y="279" width="78" height="35" border="true">
             <text>Recurso 
 PULSADOR</text>
         </labels>
-        <labels x="709" y="289" width="59" height="34" border="true">
+        <labels x="710" y="290" width="60" height="35" border="true">
             <text>Recurso
 RFID</text>
         </labels>
-        <labels x="559" y="124" width="74" height="34" border="true">
+        <labels x="560" y="125" width="75" height="35" border="true">
             <text>rfid
 detectado</text>
         </labels>
-        <labels x="1159" y="259" width="59" height="34" border="true">
+        <labels x="1160" y="260" width="60" height="35" border="true">
             <text>sacar
 foto</text>
         </labels>
-        <labels x="964" y="184" width="74" height="34" border="true">
+        <labels x="965" y="185" width="75" height="35" border="true">
             <text>solicitud
 cerradura</text>
         </labels>
-        <labels x="1144" y="184" width="59" height="34" border="true">
+        <labels x="1145" y="185" width="60" height="35" border="true">
             <text>solicitud
 foto</text>
         </labels>
-        <labels x="814" y="154" width="59" height="34" border="true">
+        <labels x="815" y="155" width="60" height="35" border="true">
             <text>solicitud
 rfid</text>
         </labels>
@@ -743,7 +743,7 @@ rfid</text>
             <tagged>
                 <value>false</value>
             </tagged>
-            <arcpath id="000" x="580" y="401" curvePoint="false"/>
+            <arcpath id="000" x="581" y="401" curvePoint="false"/>
             <arcpath id="001" x="576" y="441" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -756,7 +756,7 @@ rfid</text>
             <tagged>
                 <value>false</value>
             </tagged>
-            <arcpath id="000" x="1224" y="401" curvePoint="false"/>
+            <arcpath id="000" x="1226" y="401" curvePoint="false"/>
             <arcpath id="001" x="1221" y="426" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -849,6 +849,19 @@ rfid</text>
             </tagged>
             <arcpath id="000" x="1226" y="281" curvePoint="false"/>
             <arcpath id="001" x="1226" y="321" curvePoint="false"/>
+            <type value="normal"/>
+        </arc>
+        <arc id="P6 to T0" source="P6" target="T0">
+            <graphics/>
+            <inscription>
+                <value>Default,1</value>
+                <graphics/>
+            </inscription>
+            <tagged>
+                <value>false</value>
+            </tagged>
+            <arcpath id="000" x="280" y="230" curvePoint="false"/>
+            <arcpath id="001" x="386" y="177" curvePoint="false"/>
             <type value="normal"/>
         </arc>
         <arc id="P7 to T1" source="P7" target="T1">
@@ -1004,9 +1017,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="1061" y="331" curvePoint="false"/>
-            <arcpath id="001" x="1065" y="481" curvePoint="false"/>
-            <arcpath id="002" x="1441" y="481" curvePoint="false"/>
-            <arcpath id="003" x="1441" y="45" curvePoint="false"/>
+            <arcpath id="001" x="1066" y="482" curvePoint="false"/>
+            <arcpath id="002" x="1442" y="482" curvePoint="false"/>
+            <arcpath id="003" x="1442" y="46" curvePoint="false"/>
             <arcpath id="004" x="896" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -1046,9 +1059,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="1226" y="436" curvePoint="false"/>
-            <arcpath id="001" x="1231" y="481" curvePoint="false"/>
-            <arcpath id="002" x="1441" y="481" curvePoint="false"/>
-            <arcpath id="003" x="1441" y="45" curvePoint="false"/>
+            <arcpath id="001" x="1232" y="482" curvePoint="false"/>
+            <arcpath id="002" x="1442" y="482" curvePoint="false"/>
+            <arcpath id="003" x="1442" y="46" curvePoint="false"/>
             <arcpath id="004" x="896" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -1075,9 +1088,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="581" y="451" curvePoint="false"/>
-            <arcpath id="001" x="585" y="481" curvePoint="false"/>
-            <arcpath id="002" x="91" y="481" curvePoint="false"/>
-            <arcpath id="003" x="91" y="45" curvePoint="false"/>
+            <arcpath id="001" x="586" y="482" curvePoint="false"/>
+            <arcpath id="002" x="92" y="482" curvePoint="false"/>
+            <arcpath id="003" x="92" y="46" curvePoint="false"/>
             <arcpath id="004" x="867" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -1117,9 +1130,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="206" y="331" curvePoint="false"/>
-            <arcpath id="001" x="211" y="481" curvePoint="false"/>
-            <arcpath id="002" x="91" y="481" curvePoint="false"/>
-            <arcpath id="003" x="91" y="45" curvePoint="false"/>
+            <arcpath id="001" x="212" y="482" curvePoint="false"/>
+            <arcpath id="002" x="92" y="482" curvePoint="false"/>
+            <arcpath id="003" x="92" y="46" curvePoint="false"/>
             <arcpath id="004" x="867" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -1175,6 +1188,19 @@ rfid</text>
             <arcpath id="001" x="1226" y="252" curvePoint="false"/>
             <type value="normal"/>
         </arc>
+        <arc id="T6 to P6" source="T6" target="P6">
+            <graphics/>
+            <inscription>
+                <value>Default,1</value>
+                <graphics/>
+            </inscription>
+            <tagged>
+                <value>false</value>
+            </tagged>
+            <arcpath id="000" x="386" y="312" curvePoint="false"/>
+            <arcpath id="001" x="279" y="244" curvePoint="false"/>
+            <type value="normal"/>
+        </arc>
         <arc id="T6 to P9" source="T6" target="P9">
             <graphics/>
             <inscription>
@@ -1185,9 +1211,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="401" y="316" curvePoint="false"/>
-            <arcpath id="001" x="403" y="479" curvePoint="false"/>
-            <arcpath id="002" x="89" y="479" curvePoint="false"/>
-            <arcpath id="003" x="89" y="43" curvePoint="false"/>
+            <arcpath id="001" x="404" y="480" curvePoint="false"/>
+            <arcpath id="002" x="90" y="480" curvePoint="false"/>
+            <arcpath id="003" x="90" y="44" curvePoint="false"/>
             <arcpath id="004" x="867" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>
@@ -1227,9 +1253,9 @@ rfid</text>
                 <value>false</value>
             </tagged>
             <arcpath id="000" x="881" y="331" curvePoint="false"/>
-            <arcpath id="001" x="885" y="481" curvePoint="false"/>
-            <arcpath id="002" x="91" y="481" curvePoint="false"/>
-            <arcpath id="003" x="91" y="45" curvePoint="false"/>
+            <arcpath id="001" x="886" y="482" curvePoint="false"/>
+            <arcpath id="002" x="92" y="482" curvePoint="false"/>
+            <arcpath id="003" x="92" y="46" curvePoint="false"/>
             <arcpath id="004" x="867" y="42" curvePoint="false"/>
             <type value="normal"/>
         </arc>

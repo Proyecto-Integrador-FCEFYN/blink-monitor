@@ -27,6 +27,11 @@ static const char *TAG = "BOTON_HANDLER";
 #define LOW 0
 #define HIGH 1
 
+void enviar_evento_boton() 
+{
+    ESP_LOGI(TAG, "Envio evento boton");
+}
+
 _Noreturn void* boton_handler_task(void* arg)
 {
 

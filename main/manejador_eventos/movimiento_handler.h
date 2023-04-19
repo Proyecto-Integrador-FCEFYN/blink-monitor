@@ -15,6 +15,8 @@ typedef struct {
 
 void movimiento_handler_init(movimiento_handler_t *h, monitor_t *m);
 
+void enviar_evento_movimiento();
+
 _Noreturn void* movimiento_handler_task(void* arg);
 
 #endif /* CLASE_MOVIM_HANDLER_H */
