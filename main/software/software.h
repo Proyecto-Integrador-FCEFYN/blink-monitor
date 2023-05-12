@@ -13,7 +13,6 @@
 
 #include "macros.h"
 #include "pthread.h"
-#include "comm_dev.h"
 #include "cerradura_device.h"
 #include "cam.h"
 

@@ -15,6 +15,8 @@ typedef struct {
 
 void boton_handler_init(boton_handler_t *h, monitor_t *m);
 
+void enviar_evento_boton(); 
+
 _Noreturn void* boton_handler_task(void* arg);
 
 #endif /* CLASE_GPIO_HANDLER_H */

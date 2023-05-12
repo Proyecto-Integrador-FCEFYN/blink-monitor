@@ -1,7 +1,8 @@
 //
 // Created by agustin on 12/05/22.
 //
-
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "software.h"
 #include <esp_log.h>
 
